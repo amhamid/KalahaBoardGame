@@ -1,10 +1,12 @@
 package com.kalahaboardgame.pit.impl;
 
+import java.util.Observable;
+
 import com.kalahaboardgame.event.Event;
 import com.kalahaboardgame.event.EventType;
+import com.kalahaboardgame.event.EventUtils;
 import com.kalahaboardgame.pit.Pit;
 import com.kalahaboardgame.player.PlayerType;
-import org.apache.log4j.Logger;
 
 /**
  * Normal pit is representing one of the 6 pits for each player.
@@ -13,7 +15,6 @@ import org.apache.log4j.Logger;
  * Created by amhamid on 7/23/15.
  */
 public class NormalPit extends Pit {
-    private final static Logger logger = Logger.getLogger(NormalPit.class);
 
     public NormalPit(final PlayerType playerType, final String pitIdentifier, final int initialNumberOfSeeds) {
         super(playerType, pitIdentifier, initialNumberOfSeeds);
@@ -21,9 +22,7 @@ public class NormalPit extends Pit {
 
     // publish not empty event (after listener registration)
     public void initNotEmptyEvent() {
-        final Event notEmptyEvent = new Event(getPlayerType(), getPitIdentifier(), EventType.NOT_EMPTY, getNumberOfSeeds());
-        setChanged();
-        notifyObservers(notEmptyEvent);
+        publishEvent(getPlayerType(), EventType.NOT_EMPTY, getNumberOfSeeds());
     }
 
     @Override
@@ -32,23 +31,52 @@ public class NormalPit extends Pit {
         final int initialNumberOfSeeds = getNumberOfSeeds();
 
         // publish event initial move
-        final Event initialMoveEvent = new Event(getPlayerType(), getPitIdentifier(), EventType.INITIAL_MOVE, initialNumberOfSeeds);
-        setChanged();
-        notifyObservers(initialMoveEvent);
+        publishEvent(getPlayerType(), EventType.INITIAL_MOVE, initialNumberOfSeeds);
 
         // remove all seeds
         removeAllSeed();
 
         // publish empty event
-        final Event emptyEvent = new Event(getPlayerType(), getPitIdentifier(), EventType.EMPTY, getNumberOfSeeds());
-        setChanged();
-        notifyObservers(emptyEvent);
+        publishEvent(getPlayerType(), EventType.EMPTY, getNumberOfSeeds());
     }
 
-//    @Override
-//    public void update(Observable observable, Object object) {
-//        super.update(observable, object);
-//    }
+    public void update(Observable observable, Object object) {
+        EventUtils.assertIfUpdateContainsValidEventObject(object);
 
+        final Event event = (Event) object;
+        switch (event.getEventType()) {
+            case INITIAL_MOVE:
+            case MOVE:
+                // update its number of seeds + 1
+                addOneSeed();
+
+                publishEvent(event.getPlayerType(), EventType.NOT_EMPTY, getNumberOfSeeds());
+
+                // propagate event with original event with number of seeds - 1
+                final int numberOfSeedsInTheEvent = event.getNumberOfSeeds();
+                if(numberOfSeedsInTheEvent ==  2) {
+                    publishEvent(event.getPlayerType(), EventType.LAST_MOVE, numberOfSeedsInTheEvent - 1);
+                } else if (numberOfSeedsInTheEvent > 2) {
+                    publishEvent(event.getPlayerType(), EventType.MOVE, numberOfSeedsInTheEvent - 1);
+                }
+
+                break;
+            case LAST_MOVE:
+                if(getNumberOfSeeds() == 0) {
+                    addOneSeed();
+                    publishEvent(event.getPlayerType(), EventType.LAST_MOVE_EMPTY_PIT, getNumberOfSeeds());
+                } else {
+                    addOneSeed();
+                    publishEvent(event.getPlayerType(), EventType.NOT_EMPTY, getNumberOfSeeds());
+                }
+
+                // for the last move in normal pit, switch player turn
+                publishEvent(event.getPlayerType().changeTurn(), EventType.CHANGE_TURN, getNumberOfSeeds());
+
+                break;
+            default:
+                break;
+        }
+    }
 
 }

@@ -5,7 +5,6 @@ import java.util.Observer;
 
 import com.kalahaboardgame.event.Event;
 import com.kalahaboardgame.event.EventType;
-import com.kalahaboardgame.event.EventUtils;
 import com.kalahaboardgame.player.PlayerType;
 import org.apache.log4j.Logger;
 
@@ -32,39 +31,6 @@ public abstract class Pit extends Observable implements Observer {
 
     public abstract void initialMove();
 
-    public void update(Observable observable, Object object) {
-        EventUtils.assertIfUpdateContainsValidEventObject(object);
-
-
-        final Event event = (Event) object;
-
-        switch (event.getEventType()) {
-            case INITIAL_MOVE:
-            case MOVE:
-                logger.info(getPitIdentifier() + ": Receiving " + event);
-
-                // update its number of seeds + 1
-                addOneSeed();
-
-                // send not empty event
-                final Event notEmptyEvent = new Event(event.getPlayerType(), this.pitIdentifier, EventType.NOT_EMPTY, getNumberOfSeeds());
-                setChanged();
-                notifyObservers(notEmptyEvent);
-
-                // propagate event with original event with number of seeds - 1
-                final int numberOfSeedsInTheEvent = event.getNumberOfSeeds();
-                if(numberOfSeedsInTheEvent > 1) {
-                    final Event propagateEvent = new Event(event.getPlayerType(), this.pitIdentifier, EventType.MOVE, numberOfSeedsInTheEvent-1);
-                    setChanged();
-                    notifyObservers(propagateEvent);
-                }
-
-                break;
-            default:
-                break;
-        }
-    }
-
     public PlayerType getPlayerType() {
         return playerType;
     }
@@ -75,6 +41,12 @@ public abstract class Pit extends Observable implements Observer {
 
     public int getNumberOfSeeds() {
         return numberOfSeeds;
+    }
+
+    protected void publishEvent(final PlayerType playerType, final EventType eventType, final int numberOfSeeds) {
+        final Event event = new Event(playerType, getPitIdentifier(), eventType, numberOfSeeds);
+        setChanged();
+        notifyObservers(event);
     }
 
     protected void setNumberOfSeeds(int numberOfSeeds) {
@@ -91,6 +63,11 @@ public abstract class Pit extends Observable implements Observer {
 
     protected void removeAllSeed() {
         this.numberOfSeeds = 0;
+    }
+
+    @Override
+    public String toString() {
+        return getPlayerType() + "::" + getPitIdentifier();
     }
 
 }

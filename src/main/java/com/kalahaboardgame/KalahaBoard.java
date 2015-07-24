@@ -1,5 +1,6 @@
 package com.kalahaboardgame;
 
+import com.kalahaboardgame.logger.ReplayAbilityLogger;
 import com.kalahaboardgame.pit.impl.KalahaPit;
 import com.kalahaboardgame.pit.impl.NormalPit;
 import com.kalahaboardgame.player.PlayerType;
@@ -32,32 +33,35 @@ public class KalahaBoard {
     private final KalahaPit kalahaPitPlayer2;
 
     private final Referee referee;
+    private final ReplayAbilityLogger replayAbilityLogger;
 
     public KalahaBoard(final int initialNumberOfSeeds) {
         referee = new Referee();
+        replayAbilityLogger = new ReplayAbilityLogger();
 
-        // set up normal pit for Player 1
+        // set up pits for Player 1
         pit1 = new NormalPit(PlayerType.PLAYER_1, "Pit 1", initialNumberOfSeeds);
         pit2 = new NormalPit(PlayerType.PLAYER_1, "Pit 2",initialNumberOfSeeds);
         pit3 = new NormalPit(PlayerType.PLAYER_1, "Pit 3",initialNumberOfSeeds);
         pit4 = new NormalPit(PlayerType.PLAYER_1, "Pit 4",initialNumberOfSeeds);
         pit5 = new NormalPit(PlayerType.PLAYER_1, "Pit 5",initialNumberOfSeeds);
         pit6 = new NormalPit(PlayerType.PLAYER_1, "Pit 6",initialNumberOfSeeds);
-        kalahaPitPlayer1 = new KalahaPit(PlayerType.PLAYER_1, "Kalaha Pit Player 1", 0);
+        kalahaPitPlayer1 = new KalahaPit(PlayerType.PLAYER_1, "KalahaPit 1", 0);
 
-        // set up normal pit for Player 2
+        // set up pits for Player 2
         pit7 = new NormalPit(PlayerType.PLAYER_2, "Pit 7", initialNumberOfSeeds);
         pit8 = new NormalPit(PlayerType.PLAYER_2, "Pit 8", initialNumberOfSeeds);
         pit9 = new NormalPit(PlayerType.PLAYER_2, "Pit 9", initialNumberOfSeeds);
         pit10 = new NormalPit(PlayerType.PLAYER_2, "Pit 10", initialNumberOfSeeds);
         pit11 = new NormalPit(PlayerType.PLAYER_2, "Pit 11", initialNumberOfSeeds);
         pit12 = new NormalPit(PlayerType.PLAYER_2, "Pit 12", initialNumberOfSeeds);
-        kalahaPitPlayer2 = new KalahaPit(PlayerType.PLAYER_2, "Kalaha Pit Player 2", 0);
+        kalahaPitPlayer2 = new KalahaPit(PlayerType.PLAYER_2, "KalahaPit 2", 0);
     }
 
     public void configureBoard() {
         registerNeighbor();
         registerReferee();
+        registerReplayAbilityLogger();
     }
 
     /**
@@ -107,6 +111,9 @@ public class KalahaBoard {
         pit6.addObserver(referee);
         pit6.initNotEmptyEvent();
 
+        kalahaPitPlayer1.addObserver(referee);
+        // kalaha pit doesn't need to send not empty event
+
         pit7.addObserver(referee);
         pit7.initNotEmptyEvent();
 
@@ -124,10 +131,30 @@ public class KalahaBoard {
 
         pit12.addObserver(referee);
         pit12.initNotEmptyEvent();
+
+        kalahaPitPlayer2.addObserver(referee);
+        // kalaha pit doesn't need to send not empty event
     }
 
     // TODO register opposites !!
 
+    // register logger listener (for event replay-ability)
+    private void registerReplayAbilityLogger() {
+        pit1.addObserver(replayAbilityLogger);
+        pit2.addObserver(replayAbilityLogger);
+        pit3.addObserver(replayAbilityLogger);
+        pit4.addObserver(replayAbilityLogger);
+        pit5.addObserver(replayAbilityLogger);
+        pit6.addObserver(replayAbilityLogger);
+        kalahaPitPlayer1.addObserver(replayAbilityLogger);
+        pit7.addObserver(replayAbilityLogger);
+        pit8.addObserver(replayAbilityLogger);
+        pit9.addObserver(replayAbilityLogger);
+        pit10.addObserver(replayAbilityLogger);
+        pit11.addObserver(replayAbilityLogger);
+        pit12.addObserver(replayAbilityLogger);
+        kalahaPitPlayer2.addObserver(replayAbilityLogger);
+    }
 
     public NormalPit getPit1() {
         return pit1;

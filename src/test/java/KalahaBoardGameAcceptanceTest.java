@@ -44,8 +44,8 @@ public class KalahaBoardGameAcceptanceTest {
      * - Kalaha Pit Player 1 should have 1 seed
      * - Referee should note that Pit 1 is empty
      * - Referee should note that the rest of the pits (2..12) excluding Kalaha pit, are not empty
+     * - Player 1 should be playing again (because last seed ends in his Kalaha pit)
      * <p/>
-     * TODO: player 1 should be playing again (because last seed ends in his Kalaha pit)
      */
     @Test
     public void scenario1() {
@@ -94,12 +94,15 @@ public class KalahaBoardGameAcceptanceTest {
         Assert.assertThat("Pit 10 should be not empty pit for player 2", notEmptyPitIdentifiersForPlayer2.contains("Pit 10"), is(true));
         Assert.assertThat("Pit 11 should be not empty pit for player 2", notEmptyPitIdentifiersForPlayer2.contains("Pit 11"), is(true));
         Assert.assertThat("Pit 12 should be not empty pit for player 2", notEmptyPitIdentifiersForPlayer2.contains("Pit 12"), is(true));
+
+        final PlayerType currentPlayerTurn = referee.getCurrentPlayerTurn();
+        Assert.assertThat("Current player should be player 1", currentPlayerTurn, is(PlayerType.PLAYER_1));
     }
 
     /**
      * Scenario 2:
      * Do scenario 1 from the perspective of player 2
-     *
+     * <p/>
      * Player 2: Moving 6 seeds from Pit 7
      * <p/>
      * Expectation:
@@ -108,9 +111,8 @@ public class KalahaBoardGameAcceptanceTest {
      * - Kalaha Pit Player 2 should have 1 seed
      * - Referee should note that Pit 7 is empty
      * - Referee should note that the rest of the pits (1..6 and 8..12) excluding Kalaha pit, are not empty
+     * - Player 2 should be playing again (because last seed ends in his Kalaha pit)
      * <p/>
-     * <p/>
-     * TODO: player 2 should be playing again (because last seed ends in his Kalaha pit)
      */
     @Test
     public void scenario2() {
@@ -159,19 +161,29 @@ public class KalahaBoardGameAcceptanceTest {
         Assert.assertThat("Pit 4 should be not empty pit for player 1", notEmptyPitIdentifiersForPlayer2.contains("Pit 4"), is(true));
         Assert.assertThat("Pit 5 should be not empty pit for player 1", notEmptyPitIdentifiersForPlayer2.contains("Pit 5"), is(true));
         Assert.assertThat("Pit 6 should be not empty pit for player 1", notEmptyPitIdentifiersForPlayer2.contains("Pit 6"), is(true));
+
+        final PlayerType currentPlayerTurn = referee.getCurrentPlayerTurn();
+        Assert.assertThat("Current player should be player 2", currentPlayerTurn, is(PlayerType.PLAYER_2));
     }
 
 
-    // Scenario 3:
-    // Player 1: Moving 10 seeds from pit 6 should add 1 to its Kalaha pit and another 6 to pits opponent and skip Kalaha opponent and add 4 to his own pit (end in pit 4)
-    // switch to player 2, since last seed ends not in player 1's Kalaha pit
+    /**
+     * Scenario 3:
+     * Player 1: Moving 10 seeds from pit 6 should add 1 to its Kalaha pit and another 6 to pits opponent and skip Kalaha opponent and add 4 to his own pit (end in pit 4)
+     * Switch to player 2, since last seed ends not in player 1's Kalaha pit
+     */
+    public void scenario3() {
+
+    }
+
 
     // Scenario 4:
     // do scenario 3 from player 2 perspective
 
 
     // Scenario 5:
-    // Player 1: all of his pits is empty, except pit 6 that has 1 seed, it is his turn then he move his last seed in pit 6 to his kalaha pit, then since all pits is empty, player 1 should win
+    // Player 1: all of his pits is empty, except pit 6 that has 1 seed, it is his turn then he move his last seed in pit 6 to his kalaha pit, then since all pits is empty and Kalaha pit for player 1 has more than
+    // player 2 has, therefore player 1 should win !
     // win should override possibility to play again, since it is over
 
     // Scenario 6:

@@ -11,7 +11,6 @@ import java.util.Set;
 import com.kalahaboardgame.event.Event;
 import com.kalahaboardgame.event.EventUtils;
 import com.kalahaboardgame.player.PlayerType;
-import org.apache.log4j.Logger;
 
 /**
  * Referee to decide player's turn and who wins.
@@ -20,9 +19,9 @@ import org.apache.log4j.Logger;
  */
 public class Referee implements Observer {
 
-    private final static Logger logger = Logger.getLogger(Referee.class);
     private final Map<PlayerType, Set<String>> emptyPits;
     private final Map<PlayerType, Set<String>> notEmptyPits;
+    private PlayerType currentPlayerTurn;
 
     public Referee() {
         emptyPits = new HashMap<PlayerType, Set<String>>();
@@ -52,8 +51,6 @@ public class Referee implements Observer {
                 notEmptyPitIdentifiers.remove(originPitIdentifier);
                 notEmptyPits.put(playerType, notEmptyPitIdentifiers);
 
-                logger.info("Referee receiving " + event);
-
                 break;
             case NOT_EMPTY:
                 notEmptyPitIdentifiers.add(originPitIdentifier);
@@ -63,7 +60,9 @@ public class Referee implements Observer {
                 emptyPitIdentifiers.remove(originPitIdentifier);
                 emptyPits.put(playerType, emptyPitIdentifiers);
 
-                logger.info("Referee receiving " + event);
+                break;
+            case CHANGE_TURN:
+                this.currentPlayerTurn = event.getPlayerType();
 
                 break;
             default:
@@ -82,5 +81,9 @@ public class Referee implements Observer {
     // defensive copy on map
     public Map<PlayerType, Set<String>> getNotEmptyPits() {
         return Collections.unmodifiableMap(notEmptyPits);
+    }
+
+    public PlayerType getCurrentPlayerTurn() {
+        return currentPlayerTurn;
     }
 }

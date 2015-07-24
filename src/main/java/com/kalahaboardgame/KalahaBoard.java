@@ -1,5 +1,8 @@
 package com.kalahaboardgame;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.kalahaboardgame.logger.ReplayAbilityLogger;
 import com.kalahaboardgame.pit.impl.KalahaPit;
 import com.kalahaboardgame.pit.impl.NormalPit;
@@ -36,9 +39,6 @@ public class KalahaBoard {
     private final ReplayAbilityLogger replayAbilityLogger;
 
     public KalahaBoard(final int initialNumberOfSeeds) {
-        referee = new Referee();
-        replayAbilityLogger = new ReplayAbilityLogger();
-
         // set up pits for Player 1
         pit1 = new NormalPit(PlayerType.PLAYER_1, "Pit 1", initialNumberOfSeeds);
         pit2 = new NormalPit(PlayerType.PLAYER_1, "Pit 2",initialNumberOfSeeds);
@@ -56,6 +56,27 @@ public class KalahaBoard {
         pit11 = new NormalPit(PlayerType.PLAYER_2, "Pit 11", initialNumberOfSeeds);
         pit12 = new NormalPit(PlayerType.PLAYER_2, "Pit 12", initialNumberOfSeeds);
         kalahaPitPlayer2 = new KalahaPit(PlayerType.PLAYER_2, "KalahaPit 2", 0);
+
+        final Set<String> pitsForPlayer1 = new HashSet<String>();
+        pitsForPlayer1.add(pit1.getPitIdentifier());
+        pitsForPlayer1.add(pit2.getPitIdentifier());
+        pitsForPlayer1.add(pit3.getPitIdentifier());
+        pitsForPlayer1.add(pit4.getPitIdentifier());
+        pitsForPlayer1.add(pit5.getPitIdentifier());
+        pitsForPlayer1.add(pit6.getPitIdentifier());
+        pitsForPlayer1.add(kalahaPitPlayer1.getPitIdentifier());
+
+        final Set<String> pitsForPlayer2 = new HashSet<String>();
+        pitsForPlayer2.add(pit7.getPitIdentifier());
+        pitsForPlayer2.add(pit8.getPitIdentifier());
+        pitsForPlayer2.add(pit9.getPitIdentifier());
+        pitsForPlayer2.add(pit10.getPitIdentifier());
+        pitsForPlayer2.add(pit11.getPitIdentifier());
+        pitsForPlayer2.add(pit12.getPitIdentifier());
+        pitsForPlayer2.add(kalahaPitPlayer2.getPitIdentifier());
+
+        referee = new Referee(pitsForPlayer1, pitsForPlayer2);
+        replayAbilityLogger = new ReplayAbilityLogger();
     }
 
     public void configureBoard() {

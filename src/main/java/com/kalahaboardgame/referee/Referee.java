@@ -19,11 +19,18 @@ import com.kalahaboardgame.player.PlayerType;
  */
 public class Referee implements Observer {
 
+    private final Set<String> pitsForPlayer1;
+    private final Set<String> pitsForPlayer2;
+
     private final Map<PlayerType, Set<String>> emptyPits;
     private final Map<PlayerType, Set<String>> notEmptyPits;
+
     private PlayerType currentPlayerTurn;
 
-    public Referee() {
+    public Referee(final Set<String> pitsForPlayer1, final Set<String> pitsForPlayer2) {
+        this.pitsForPlayer1 = pitsForPlayer1;
+        this.pitsForPlayer2 = pitsForPlayer2;
+
         emptyPits = new HashMap<PlayerType, Set<String>>();
         emptyPits.put(PlayerType.PLAYER_1, new HashSet<String>());
         emptyPits.put(PlayerType.PLAYER_2, new HashSet<String>());
@@ -37,8 +44,17 @@ public class Referee implements Observer {
         EventUtils.assertIfUpdateContainsValidEventObject(object);
 
         final Event event = (Event) object;
-        final PlayerType playerType = event.getPlayerType();
         final String originPitIdentifier = event.getOriginPitIdentifier();
+
+        final PlayerType playerType;
+        if(pitsForPlayer1.contains(originPitIdentifier)) {
+            playerType = PlayerType.PLAYER_1;
+        } else if(pitsForPlayer2.contains(originPitIdentifier)) {
+            playerType = PlayerType.PLAYER_2;
+        } else {
+            throw new IllegalArgumentException("Pit doesn't belong to any player: " +originPitIdentifier);
+        }
+
         final Set<String> emptyPitIdentifiers = emptyPits.get(playerType);
         final Set<String> notEmptyPitIdentifiers = notEmptyPits.get(playerType);
 
@@ -71,6 +87,16 @@ public class Referee implements Observer {
 
         // TODO publish event if player 1 or 2 has 6 empty pits !!!
 
+    }
+
+    // defensive copy on set
+    public Set<String> getPitsForPlayer1() {
+        return Collections.unmodifiableSet(pitsForPlayer1);
+    }
+
+    // defensive copy on set
+    public Set<String> getPitsForPlayer2() {
+        return Collections.unmodifiableSet(pitsForPlayer2);
     }
 
     // defensive copy on map

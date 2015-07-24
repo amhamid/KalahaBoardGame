@@ -30,14 +30,15 @@ public class NormalPit extends Pit {
         // get number of seeds
         final int initialNumberOfSeeds = getNumberOfSeeds();
 
-        // publish event initial move
-        publishEvent(getPlayerType(), EventType.INITIAL_MOVE, initialNumberOfSeeds);
-
         // remove all seeds
         removeAllSeed();
 
         // publish empty event
         publishEvent(getPlayerType(), EventType.EMPTY, getNumberOfSeeds());
+
+        // publish event initial move
+        publishEvent(getPlayerType(), EventType.INITIAL_MOVE, initialNumberOfSeeds);
+
     }
 
     public void update(Observable observable, Object object) {

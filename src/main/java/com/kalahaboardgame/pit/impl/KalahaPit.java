@@ -11,7 +11,7 @@ import com.kalahaboardgame.player.PlayerType;
 /**
  * Kalaha pit is representing one of one store pit for each player.
  * So total in a board, there are 2 KalahaPit objects.
- *
+ * <p/>
  * Created by amhamid on 7/23/15.
  */
 public class KalahaPit extends Pit {
@@ -32,26 +32,32 @@ public class KalahaPit extends Pit {
         switch (event.getEventType()) {
             case INITIAL_MOVE:
             case MOVE:
-                // update its number of seeds + 1
-                addOneSeed();
+                final int numberOfEventNeedToBePropagated;
+                // only update Kalaha pit when current player is the owner of the Kalaha pit
+                if(getPlayerType() == event.getPlayerType()) {
+                    addOneSeed();
+                    numberOfEventNeedToBePropagated = event.getNumberOfSeeds() - 1;
+                } else {
+                    // propagate the last move event, since player is not the owner of the kalaha pit
+                    numberOfEventNeedToBePropagated = event.getNumberOfSeeds();
+                }
 
-                // propagate event with original event with number of seeds - 1
-                final int numberOfSeedsInTheEvent = event.getNumberOfSeeds();
-                if(numberOfSeedsInTheEvent ==  2) { // this means that the next move is the last move
-                    final Event lastMoveEvent = new Event(event.getPlayerType(), getPitIdentifier(), EventType.LAST_MOVE, numberOfSeedsInTheEvent - 1);
-                    setChanged();
-                    notifyObservers(lastMoveEvent);
-                } else if (numberOfSeedsInTheEvent > 2) {
-                    final Event moveEvent = new Event(event.getPlayerType(), getPitIdentifier(), EventType.MOVE, numberOfSeedsInTheEvent - 1);
-                    setChanged();
-                    notifyObservers(moveEvent);
+                if (numberOfEventNeedToBePropagated == 1) { // this means that the next move is the last move
+                    publishEvent(event.getPlayerType(), EventType.LAST_MOVE, numberOfEventNeedToBePropagated);
+                } else if (numberOfEventNeedToBePropagated > 1) {
+                    publishEvent(event.getPlayerType(), EventType.MOVE, numberOfEventNeedToBePropagated);
                 }
 
                 break;
             case LAST_MOVE:
-                addOneSeed();
-                // for the last move in kalaha pit, the current player can play again
-                publishEvent(event.getPlayerType(), EventType.CHANGE_TURN, getNumberOfSeeds());
+                if(getPlayerType() == event.getPlayerType()) {
+                    addOneSeed();
+                    // for the last move in kalaha pit, the current player can play again
+                    publishEvent(event.getPlayerType(), EventType.CHANGE_TURN, event.getNumberOfSeeds()); // in CHANGE_TURN, number of seed is ignored
+                } else {
+                    // propagate the last move event, since player is not the owner of the kalaha pit
+                    publishEvent(event.getPlayerType(), EventType.LAST_MOVE, event.getNumberOfSeeds());
+                }
 
                 break;
             default:

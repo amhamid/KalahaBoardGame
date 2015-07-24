@@ -49,7 +49,7 @@ public abstract class Pit extends Observable implements Observer {
         notifyObservers(event);
     }
 
-    protected void setNumberOfSeeds(int numberOfSeeds) {
+    public void setNumberOfSeeds(int numberOfSeeds) {
         this.numberOfSeeds = numberOfSeeds;
     }
 
@@ -67,7 +67,27 @@ public abstract class Pit extends Observable implements Observer {
 
     @Override
     public String toString() {
-        return getPlayerType() + "::" + getPitIdentifier();
+        return getPitIdentifier();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Pit pit = (Pit) o;
+
+        if (numberOfSeeds != pit.numberOfSeeds) return false;
+        if (playerType != pit.playerType) return false;
+        return !(pitIdentifier != null ? !pitIdentifier.equals(pit.pitIdentifier) : pit.pitIdentifier != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = playerType != null ? playerType.hashCode() : 0;
+        result = 31 * result + (pitIdentifier != null ? pitIdentifier.hashCode() : 0);
+        result = 31 * result + numberOfSeeds;
+        return result;
+    }
 }

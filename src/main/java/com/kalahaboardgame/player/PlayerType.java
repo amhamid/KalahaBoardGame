@@ -1,8 +1,8 @@
 package com.kalahaboardgame.player;
 
 /**
- * Player type, e.g. player 1 and player 2.
- *
+ * Player type: player 1 and player 2.
+ * <p/>
  * Created by amhamid on 7/23/15.
  */
 public enum PlayerType {
@@ -11,7 +11,7 @@ public enum PlayerType {
 
     public PlayerType changeTurn() {
         final PlayerType playerTurn;
-        switch(this) {
+        switch (this) {
             case PLAYER_1:
                 playerTurn = PLAYER_2;
                 break;

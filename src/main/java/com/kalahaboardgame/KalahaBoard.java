@@ -1,9 +1,13 @@
 package com.kalahaboardgame;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Sets;
 import com.kalahaboardgame.logger.ReplayAbilityLogger;
+import com.kalahaboardgame.pit.Pit;
 import com.kalahaboardgame.pit.impl.KalahaPit;
 import com.kalahaboardgame.pit.impl.NormalPit;
 import com.kalahaboardgame.player.PlayerType;
@@ -11,7 +15,24 @@ import com.kalahaboardgame.referee.Referee;
 
 /**
  * Kalaha Board.
- * This object configure the board and initialize pits and its location.
+ * This object configures Kalaha board and initialize pits and connect them together thru publisher/subscriber mechanism.
+ * <p/>
+ * <pre>
+ *
+ * The board configuration looks like the following:
+ *
+ *     -------------------------------------------------------------------------
+ *     |             Pit12   Pit11   Pit10   Pit9    Pit8    Pit7              |
+ *     |                                                                       |
+ *     | KalahaPit2                                                 KalahaPit1 |
+ *     |                                                                       |
+ *     |             Pit1    Pit2    Pit3    Pit4    Pit5    Pit6              |
+ *     -------------------------------------------------------------------------
+ *
+ *     Player 1 owns:  Pit 1 .. 6   +  KalahaPit1
+ *     Player 2 owns:  Pit 7 .. 12  +  KalahaPit2
+ *
+ * </pre>
  * <p/>
  * Created by amhamid on 7/23/15.
  */
@@ -37,15 +58,19 @@ public class KalahaBoard {
 
     private final Referee referee;
     private final ReplayAbilityLogger replayAbilityLogger;
+    private final Set<Pit> pitsForPlayer1;
+    private final Set<Pit> pitsForPlayer2;
+    private final Set<Pit> allPits;
+
 
     public KalahaBoard(final int initialNumberOfSeeds) {
         // set up pits for Player 1
         pit1 = new NormalPit(PlayerType.PLAYER_1, "Pit 1", initialNumberOfSeeds);
-        pit2 = new NormalPit(PlayerType.PLAYER_1, "Pit 2",initialNumberOfSeeds);
-        pit3 = new NormalPit(PlayerType.PLAYER_1, "Pit 3",initialNumberOfSeeds);
-        pit4 = new NormalPit(PlayerType.PLAYER_1, "Pit 4",initialNumberOfSeeds);
-        pit5 = new NormalPit(PlayerType.PLAYER_1, "Pit 5",initialNumberOfSeeds);
-        pit6 = new NormalPit(PlayerType.PLAYER_1, "Pit 6",initialNumberOfSeeds);
+        pit2 = new NormalPit(PlayerType.PLAYER_1, "Pit 2", initialNumberOfSeeds);
+        pit3 = new NormalPit(PlayerType.PLAYER_1, "Pit 3", initialNumberOfSeeds);
+        pit4 = new NormalPit(PlayerType.PLAYER_1, "Pit 4", initialNumberOfSeeds);
+        pit5 = new NormalPit(PlayerType.PLAYER_1, "Pit 5", initialNumberOfSeeds);
+        pit6 = new NormalPit(PlayerType.PLAYER_1, "Pit 6", initialNumberOfSeeds);
         kalahaPitPlayer1 = new KalahaPit(PlayerType.PLAYER_1, "KalahaPit 1", 0);
 
         // set up pits for Player 2
@@ -57,43 +82,36 @@ public class KalahaBoard {
         pit12 = new NormalPit(PlayerType.PLAYER_2, "Pit 12", initialNumberOfSeeds);
         kalahaPitPlayer2 = new KalahaPit(PlayerType.PLAYER_2, "KalahaPit 2", 0);
 
-        final Set<String> pitsForPlayer1 = new HashSet<String>();
-        pitsForPlayer1.add(pit1.getPitIdentifier());
-        pitsForPlayer1.add(pit2.getPitIdentifier());
-        pitsForPlayer1.add(pit3.getPitIdentifier());
-        pitsForPlayer1.add(pit4.getPitIdentifier());
-        pitsForPlayer1.add(pit5.getPitIdentifier());
-        pitsForPlayer1.add(pit6.getPitIdentifier());
-        pitsForPlayer1.add(kalahaPitPlayer1.getPitIdentifier());
+        // assign pits for players
+        pitsForPlayer1 = getPitsForPlayer1();
+        pitsForPlayer2 = getPitsForPlayer2();
+        allPits = new LinkedHashSet<>();
+        allPits.addAll(pitsForPlayer1);
+        allPits.addAll(pitsForPlayer2);
 
-        final Set<String> pitsForPlayer2 = new HashSet<String>();
-        pitsForPlayer2.add(pit7.getPitIdentifier());
-        pitsForPlayer2.add(pit8.getPitIdentifier());
-        pitsForPlayer2.add(pit9.getPitIdentifier());
-        pitsForPlayer2.add(pit10.getPitIdentifier());
-        pitsForPlayer2.add(pit11.getPitIdentifier());
-        pitsForPlayer2.add(pit12.getPitIdentifier());
-        pitsForPlayer2.add(kalahaPitPlayer2.getPitIdentifier());
-
-        referee = new Referee(pitsForPlayer1, pitsForPlayer2);
+        // initialize observers
+        referee = new Referee(getPitIdentifierForPlayer1(), getPitIdentifierForPlayer2());
         replayAbilityLogger = new ReplayAbilityLogger();
     }
 
     public void configureBoard() {
-        registerNeighbor();
+        registerNeighbors();
         registerReferee();
         registerReplayAbilityLogger();
+
+        // this is to tell observers that all pits are ready and filled with seeds
+        publishNotEmptyEventForAllPits();
     }
 
     /**
-     * Register neighbors
-     *
+     * Register neighbors.
+     * <p/>
      * e.g.
-     * - pit2 is listening on events from pit1
-     * - pit3 is listening on events from pit4
+     * - pit2 is observing events from pit1
+     * - pit3 is observing events from pit4
      * - and so on, until we have a circular connection (a connected graph)
      */
-    private void registerNeighbor() {
+    private void registerNeighbors() {
         pit1.addObserver(pit2);
         pit2.addObserver(pit3);
         pit3.addObserver(pit4);
@@ -111,70 +129,78 @@ public class KalahaBoard {
     }
 
     /**
-     * Register referee (basically the referee listens to all pits)
+     * Register referee to all pits.
      */
     private void registerReferee() {
-        pit1.addObserver(referee);
-        pit1.initNotEmptyEvent();
-
-        pit2.addObserver(referee);
-        pit2.initNotEmptyEvent();
-
-        pit3.addObserver(referee);
-        pit3.initNotEmptyEvent();
-
-        pit4.addObserver(referee);
-        pit4.initNotEmptyEvent();
-
-        pit5.addObserver(referee);
-        pit5.initNotEmptyEvent();
-
-        pit6.addObserver(referee);
-        pit6.initNotEmptyEvent();
-
-        kalahaPitPlayer1.addObserver(referee);
-        // kalaha pit doesn't need to send not empty event
-
-        pit7.addObserver(referee);
-        pit7.initNotEmptyEvent();
-
-        pit8.addObserver(referee);
-        pit8.initNotEmptyEvent();
-
-        pit9.addObserver(referee);
-        pit9.initNotEmptyEvent();
-
-        pit10.addObserver(referee);
-        pit10.initNotEmptyEvent();
-
-        pit11.addObserver(referee);
-        pit11.initNotEmptyEvent();
-
-        pit12.addObserver(referee);
-        pit12.initNotEmptyEvent();
-
-        kalahaPitPlayer2.addObserver(referee);
-        // kalaha pit doesn't need to send not empty event
+        for (final Pit pit : allPits) {
+            pit.addObserver(referee);
+        }
     }
 
     // TODO register opposites !!
 
-    // register logger listener (for event replay-ability)
+    /**
+     * Register logger (for event replay-ability) to all pits.
+     */
     private void registerReplayAbilityLogger() {
-        pit1.addObserver(replayAbilityLogger);
-        pit2.addObserver(replayAbilityLogger);
-        pit3.addObserver(replayAbilityLogger);
-        pit4.addObserver(replayAbilityLogger);
-        pit5.addObserver(replayAbilityLogger);
-        pit6.addObserver(replayAbilityLogger);
-        kalahaPitPlayer1.addObserver(replayAbilityLogger);
-        pit7.addObserver(replayAbilityLogger);
-        pit8.addObserver(replayAbilityLogger);
-        pit9.addObserver(replayAbilityLogger);
-        pit10.addObserver(replayAbilityLogger);
-        pit11.addObserver(replayAbilityLogger);
-        pit12.addObserver(replayAbilityLogger);
-        kalahaPitPlayer2.addObserver(replayAbilityLogger);
+        for (final Pit pit : allPits) {
+            pit.addObserver(replayAbilityLogger);
+        }
+    }
+
+    // This is to let observers know that all pits has been filled with seeds
+    private void publishNotEmptyEventForAllPits() {
+        for (final Pit pit : allPits) {
+            pit.publishNotEmptyEvent();
+        }
+    }
+
+    // get all pits for player 1
+    private Set<Pit> getPitsForPlayer1() {
+        final Set<Pit> pitsForPlayer1 = new LinkedHashSet<>();
+        pitsForPlayer1.add(pit1);
+        pitsForPlayer1.add(pit2);
+        pitsForPlayer1.add(pit3);
+        pitsForPlayer1.add(pit4);
+        pitsForPlayer1.add(pit5);
+        pitsForPlayer1.add(pit6);
+        pitsForPlayer1.add(kalahaPitPlayer1);
+
+        return pitsForPlayer1;
+    }
+
+    // get all pits for player 2
+    private Set<Pit> getPitsForPlayer2() {
+        final Set<Pit> pitsForPlayer2 = new LinkedHashSet<>();
+        pitsForPlayer2.add(pit7);
+        pitsForPlayer2.add(pit8);
+        pitsForPlayer2.add(pit9);
+        pitsForPlayer2.add(pit10);
+        pitsForPlayer2.add(pit11);
+        pitsForPlayer2.add(pit12);
+        pitsForPlayer2.add(kalahaPitPlayer2);
+
+        return pitsForPlayer2;
+    }
+
+    // get all pits identifier for player 1
+    private Set<String> getPitIdentifierForPlayer1() {
+        return Sets.newHashSet(Collections2.transform(pitsForPlayer1, new Function<Pit, String>() {
+            @Override
+            public String apply(final Pit pit) {
+                return pit.getPitIdentifier();
+            }
+        }));
+    }
+
+    // get all pits identifier for player 2
+    private Set<String> getPitIdentifierForPlayer2() {
+        return Sets.newHashSet(Collections2.transform(pitsForPlayer2, new Function<Pit, String>() {
+            @Override
+            public String apply(final Pit pit) {
+                return pit.getPitIdentifier();
+            }
+        }));
     }
 
     public NormalPit getPit1() {

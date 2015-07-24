@@ -25,6 +25,11 @@ public class KalahaPit extends Pit {
         throw new IllegalStateException("Kalaha Pit should never have an initial move, it only be able to receive seeds but never be able to move them");
     }
 
+    @Override
+    public void publishNotEmptyEvent() {
+        // no need to publish not empty event for Kalaha pit
+    }
+
     public void update(Observable observable, Object object) {
         EventUtils.assertIfUpdateContainsValidEventObject(object);
 
@@ -32,33 +37,32 @@ public class KalahaPit extends Pit {
         switch (event.getEventType()) {
             case INITIAL_MOVE:
             case MOVE:
-                final int numberOfEventNeedToBePropagated;
+                final int numberOfSeedsInTheEventThatNeedToBePropagated;
                 // only update Kalaha pit when current player is the owner of the Kalaha pit
-                if(getPlayerType() == event.getPlayerType()) {
+                if (getPlayerType() == event.getPlayerType()) {
                     addOneSeed();
-                    numberOfEventNeedToBePropagated = event.getNumberOfSeeds() - 1;
+                    numberOfSeedsInTheEventThatNeedToBePropagated = event.getNumberOfSeeds() - 1;
                 } else {
                     // propagate the last move event, since player is not the owner of the kalaha pit
-                    numberOfEventNeedToBePropagated = event.getNumberOfSeeds();
+                    numberOfSeedsInTheEventThatNeedToBePropagated = event.getNumberOfSeeds();
                 }
 
-                if (numberOfEventNeedToBePropagated == 1) { // this means that the next move is the last move
-                    publishEvent(event.getPlayerType(), EventType.LAST_MOVE, numberOfEventNeedToBePropagated);
-                } else if (numberOfEventNeedToBePropagated > 1) {
-                    publishEvent(event.getPlayerType(), EventType.MOVE, numberOfEventNeedToBePropagated);
+                if (numberOfSeedsInTheEventThatNeedToBePropagated == 1) { // this means that the next move is the last move
+                    publishEvent(event.getPlayerType(), EventType.LAST_MOVE, numberOfSeedsInTheEventThatNeedToBePropagated);
+                } else if (numberOfSeedsInTheEventThatNeedToBePropagated > 1) {
+                    publishEvent(event.getPlayerType(), EventType.MOVE, numberOfSeedsInTheEventThatNeedToBePropagated);
                 }
-
                 break;
             case LAST_MOVE:
-                if(getPlayerType() == event.getPlayerType()) {
+                if (getPlayerType() == event.getPlayerType()) {
                     addOneSeed();
                     // for the last move in kalaha pit, the current player can play again
                     publishEvent(event.getPlayerType(), EventType.CHANGE_TURN, event.getNumberOfSeeds()); // in CHANGE_TURN, number of seed is ignored
                 } else {
                     // propagate the last move event, since player is not the owner of the kalaha pit
+                    // number of seeds in the event remain untouched !!
                     publishEvent(event.getPlayerType(), EventType.LAST_MOVE, event.getNumberOfSeeds());
                 }
-
                 break;
             default:
                 break;

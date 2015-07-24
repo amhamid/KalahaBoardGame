@@ -1,17 +1,16 @@
 package com.kalahaboardgame.event;
 
 /**
- * This is to indicate an event type.
- *
+ * This is to indicate possible event types.
+ * <p/>
  * Created by amhamid on 7/23/15.
  */
 public enum EventType {
-    INITIAL_MOVE, // technically this is the same with MOVE, however, this is important for event replay-ability. (to replay all events from beginning till end)
+    INITIAL_MOVE,
     MOVE,
     LAST_MOVE,
     LAST_MOVE_EMPTY_PIT,
     CHANGE_TURN,
     EMPTY,
     NOT_EMPTY
-
 }

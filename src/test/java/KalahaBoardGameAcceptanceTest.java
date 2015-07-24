@@ -170,7 +170,7 @@ public class KalahaBoardGameAcceptanceTest {
     /**
      * Scenario 3:
      * Player 1: Moving 14 seeds from pit 1.
-     *
+     * <p/>
      * Expectations:
      * - Should add 1 to all of its neighbors and should stop at pit 2 (next round)
      * - Should skip the Kalaha opponent
@@ -237,12 +237,10 @@ public class KalahaBoardGameAcceptanceTest {
         Assert.assertThat("Current player should switch to player 2", currentPlayerTurn, is(PlayerType.PLAYER_2));
     }
 
-
-    // Scenario 4:
-    //
     /**
+     * Scenario 4:
      * Player 2: Moving 14 seeds from pit 7.
-     *
+     * <p/>
      * Expectations:
      * - Should add 1 to all of its neighbors and should stop at pit 8 (next round)
      * - Should skip the Kalaha opponent
@@ -308,7 +306,6 @@ public class KalahaBoardGameAcceptanceTest {
         final PlayerType currentPlayerTurn = referee.getCurrentPlayerTurn();
         Assert.assertThat("Current player should switch to player 1", currentPlayerTurn, is(PlayerType.PLAYER_1));
     }
-
 
 
     // Scenario 5:

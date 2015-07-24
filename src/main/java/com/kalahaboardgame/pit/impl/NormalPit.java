@@ -20,11 +20,6 @@ public class NormalPit extends Pit {
         super(playerType, pitIdentifier, initialNumberOfSeeds);
     }
 
-    // publish not empty event (after listener registration)
-    public void initNotEmptyEvent() {
-        publishEvent(getPlayerType(), EventType.NOT_EMPTY, getNumberOfSeeds());
-    }
-
     @Override
     public void initialMove() {
         // get number of seeds
@@ -38,7 +33,11 @@ public class NormalPit extends Pit {
 
         // publish event initial move
         publishEvent(getPlayerType(), EventType.INITIAL_MOVE, initialNumberOfSeeds);
+    }
 
+    @Override
+    public void publishNotEmptyEvent() {
+        publishEvent(getPlayerType(), EventType.NOT_EMPTY, getNumberOfSeeds());
     }
 
     public void update(Observable observable, Object object) {
@@ -48,22 +47,19 @@ public class NormalPit extends Pit {
         switch (event.getEventType()) {
             case INITIAL_MOVE:
             case MOVE:
-                // update its number of seeds + 1
                 addOneSeed();
-
                 publishEvent(event.getPlayerType(), EventType.NOT_EMPTY, getNumberOfSeeds());
 
                 // propagate event with original event with number of seeds - 1
-                final int numberOfSeedsInTheEvent = event.getNumberOfSeeds();
-                if(numberOfSeedsInTheEvent ==  2) {
-                    publishEvent(event.getPlayerType(), EventType.LAST_MOVE, numberOfSeedsInTheEvent - 1);
-                } else if (numberOfSeedsInTheEvent > 2) {
-                    publishEvent(event.getPlayerType(), EventType.MOVE, numberOfSeedsInTheEvent - 1);
+                final int numberOfSeedsInTheEventThatNeedToBePropagated = event.getNumberOfSeeds() - 1;
+                if (numberOfSeedsInTheEventThatNeedToBePropagated == 1) {
+                    publishEvent(event.getPlayerType(), EventType.LAST_MOVE, numberOfSeedsInTheEventThatNeedToBePropagated);
+                } else if (numberOfSeedsInTheEventThatNeedToBePropagated > 1) {
+                    publishEvent(event.getPlayerType(), EventType.MOVE, numberOfSeedsInTheEventThatNeedToBePropagated);
                 }
-
                 break;
             case LAST_MOVE:
-                if(getNumberOfSeeds() == 0) {
+                if (getNumberOfSeeds() == 0) { // if current pit is empty
                     addOneSeed();
                     publishEvent(event.getPlayerType(), EventType.LAST_MOVE_EMPTY_PIT, getNumberOfSeeds());
                 } else {
@@ -71,9 +67,8 @@ public class NormalPit extends Pit {
                     publishEvent(event.getPlayerType(), EventType.NOT_EMPTY, getNumberOfSeeds());
                 }
 
-                // for the last move in normal pit, switch player turn
+                // for the last move in normal pit, switch player turn (player may only play again, when the last seed is in his own Kalaha pit)
                 publishEvent(event.getPlayerType().changeTurn(), EventType.CHANGE_TURN, getNumberOfSeeds());
-
                 break;
             default:
                 break;

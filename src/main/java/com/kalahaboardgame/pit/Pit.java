@@ -6,7 +6,6 @@ import java.util.Observer;
 import com.kalahaboardgame.event.Event;
 import com.kalahaboardgame.event.EventType;
 import com.kalahaboardgame.player.PlayerType;
-import org.apache.log4j.Logger;
 
 /**
  * Interface for Pit.
@@ -16,8 +15,6 @@ import org.apache.log4j.Logger;
  * Created by amhamid on 7/23/15.
  */
 public abstract class Pit extends Observable implements Observer {
-
-    private final static Logger logger = Logger.getLogger(Pit.class);
 
     private final PlayerType playerType;
     private final String pitIdentifier;
@@ -30,6 +27,7 @@ public abstract class Pit extends Observable implements Observer {
     }
 
     public abstract void initialMove();
+    public abstract void publishNotEmptyEvent();
 
     public PlayerType getPlayerType() {
         return playerType;
@@ -55,10 +53,6 @@ public abstract class Pit extends Observable implements Observer {
 
     protected void addOneSeed() {
         this.numberOfSeeds++;
-    }
-
-    protected void removeOneSeed() {
-        this.numberOfSeeds--;
     }
 
     protected void removeAllSeed() {

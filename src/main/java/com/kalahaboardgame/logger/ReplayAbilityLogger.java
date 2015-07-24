@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 
 /**
  * Replay-ability logger, to recreate situation based on events
- *
+ * <p/>
  * Created by amhamid on 7/24/15.
  */
 public class ReplayAbilityLogger implements Observer {

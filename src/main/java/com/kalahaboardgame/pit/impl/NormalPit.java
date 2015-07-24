@@ -1,12 +1,10 @@
 package com.kalahaboardgame.pit.impl;
 
-import java.util.Observable;
-
 import com.kalahaboardgame.event.Event;
 import com.kalahaboardgame.event.EventType;
-import com.kalahaboardgame.event.EventUtils;
 import com.kalahaboardgame.pit.Pit;
 import com.kalahaboardgame.player.PlayerType;
+import com.kalahaboardgame.pubsub.Observable;
 
 /**
  * Normal pit is representing one of the 6 pits for each player.
@@ -40,28 +38,33 @@ public class NormalPit extends Pit {
         publishEvent(getPlayerType(), EventType.NOT_EMPTY, getNumberOfSeeds());
     }
 
-    public void update(Observable observable, Object object) {
-        EventUtils.assertIfUpdateContainsValidEventObject(object);
-
-        final Event event = (Event) object;
+    @Override
+    public void update(final Observable observable, final Event event) {
         switch (event.getEventType()) {
             case INITIAL_MOVE:
             case MOVE:
-                addOneSeed();
-                publishEvent(event.getPlayerType(), EventType.NOT_EMPTY, getNumberOfSeeds());
+                // publish CAPTURE_SEEDS event when current pit is empty and event has only 1 seed
+                if(getNumberOfSeeds() == 0 && event.getNumberOfSeeds() == 1) {
+                    publishEvent(event.getPlayerType(), EventType.CAPTURE_SEEDS, 1);
+                } else {
+                    addOneSeed();
+                    publishEvent(event.getPlayerType(), EventType.NOT_EMPTY, getNumberOfSeeds());
 
-                // propagate event with original event with number of seeds - 1
-                final int numberOfSeedsInTheEventThatNeedToBePropagated = event.getNumberOfSeeds() - 1;
-                if (numberOfSeedsInTheEventThatNeedToBePropagated == 1) {
-                    publishEvent(event.getPlayerType(), EventType.LAST_MOVE, numberOfSeedsInTheEventThatNeedToBePropagated);
-                } else if (numberOfSeedsInTheEventThatNeedToBePropagated > 1) {
-                    publishEvent(event.getPlayerType(), EventType.MOVE, numberOfSeedsInTheEventThatNeedToBePropagated);
+                    // propagate event with original event with number of seeds - 1
+                    final int numberOfSeedsInTheEventThatNeedToBePropagated = event.getNumberOfSeeds() - 1;
+                    if (numberOfSeedsInTheEventThatNeedToBePropagated == 1) {
+                        publishEvent(event.getPlayerType(), EventType.LAST_MOVE, numberOfSeedsInTheEventThatNeedToBePropagated);
+                    } else if (numberOfSeedsInTheEventThatNeedToBePropagated > 1) {
+                        publishEvent(event.getPlayerType(), EventType.MOVE, numberOfSeedsInTheEventThatNeedToBePropagated);
+                    } else {
+                        publishEvent(event.getPlayerType(), EventType.LAST_MOVE, numberOfSeedsInTheEventThatNeedToBePropagated);
+                    }
                 }
                 break;
             case LAST_MOVE:
-                if (getNumberOfSeeds() == 0) { // if current pit is empty
-                    addOneSeed();
-                    publishEvent(event.getPlayerType(), EventType.LAST_MOVE_EMPTY_PIT, getNumberOfSeeds());
+                if (getNumberOfSeeds() == 0) { // empty pit
+                    // no need to update seed with 1, since this is a trigger for CAPTURE_SEEDS event
+                    publishEvent(event.getPlayerType(), EventType.CAPTURE_SEEDS, 1);
                 } else {
                     addOneSeed();
                     publishEvent(event.getPlayerType(), EventType.NOT_EMPTY, getNumberOfSeeds());
@@ -69,6 +72,12 @@ public class NormalPit extends Pit {
 
                 // for the last move in normal pit, switch player turn (player may only play again, when the last seed is in his own Kalaha pit)
                 publishEvent(event.getPlayerType().changeTurn(), EventType.CHANGE_TURN, getNumberOfSeeds());
+                break;
+            case CAPTURE_SEEDS:
+                final int numberOfSeeds = getNumberOfSeeds();
+                removeAllSeed();
+                publishEvent(event.getPlayerType(), EventType.EMPTY, getNumberOfSeeds());
+                publishEvent(event.getPlayerType(), EventType.STORE_SEEDS, numberOfSeeds + event.getNumberOfSeeds());
                 break;
             default:
                 break;

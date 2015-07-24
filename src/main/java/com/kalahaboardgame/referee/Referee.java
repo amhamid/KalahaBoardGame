@@ -4,13 +4,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Set;
 
 import com.kalahaboardgame.event.Event;
-import com.kalahaboardgame.event.EventUtils;
 import com.kalahaboardgame.player.PlayerType;
+import com.kalahaboardgame.pubsub.Observable;
+import com.kalahaboardgame.pubsub.Observer;
 
 /**
  * Referee to decide player's turn and who wins.
@@ -38,10 +37,8 @@ public class Referee implements Observer {
         notEmptyPits.put(PlayerType.PLAYER_2, new LinkedHashSet<String>());
     }
 
-    public void update(final Observable observable, final Object object) {
-        EventUtils.assertIfUpdateContainsValidEventObject(object);
-
-        final Event event = (Event) object;
+    @Override
+    public void update(final Observable observable, final Event event) {
         final String originPitIdentifier = event.getOriginPitIdentifier();
         final PlayerType playerType;
         if (pitsForPlayer1.contains(originPitIdentifier)) {

@@ -1,12 +1,10 @@
 package com.kalahaboardgame.pit.impl;
 
-import java.util.Observable;
-
 import com.kalahaboardgame.event.Event;
 import com.kalahaboardgame.event.EventType;
-import com.kalahaboardgame.event.EventUtils;
 import com.kalahaboardgame.pit.Pit;
 import com.kalahaboardgame.player.PlayerType;
+import com.kalahaboardgame.pubsub.Observable;
 
 /**
  * Kalaha pit is representing one of one store pit for each player.
@@ -30,10 +28,8 @@ public class KalahaPit extends Pit {
         // no need to publish not empty event for Kalaha pit
     }
 
-    public void update(Observable observable, Object object) {
-        EventUtils.assertIfUpdateContainsValidEventObject(object);
-
-        final Event event = (Event) object;
+    @Override
+    public void update(final Observable observable, final Event event) {
         switch (event.getEventType()) {
             case INITIAL_MOVE:
             case MOVE:
@@ -63,6 +59,11 @@ public class KalahaPit extends Pit {
                     // number of seeds in the event remain untouched !!
                     publishEvent(event.getPlayerType(), EventType.LAST_MOVE, event.getNumberOfSeeds());
                 }
+                break;
+            case STORE_SEEDS:
+                setNumberOfSeeds(getNumberOfSeeds() + event.getNumberOfSeeds());
+                publishEvent(event.getPlayerType(), EventType.STORED, getNumberOfSeeds());
+                publishEvent(event.getPlayerType().changeTurn(), EventType.CHANGE_TURN, event.getNumberOfSeeds());
                 break;
             default:
                 break;

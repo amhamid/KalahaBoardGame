@@ -1,11 +1,15 @@
 package com.kalahaboardgame.pit;
 
-import java.util.Observable;
-import java.util.Observer;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 import com.kalahaboardgame.event.Event;
 import com.kalahaboardgame.event.EventType;
 import com.kalahaboardgame.player.PlayerType;
+import com.kalahaboardgame.pubsub.Observable;
+import com.kalahaboardgame.pubsub.Observer;
 
 /**
  * Interface for Pit.
@@ -14,20 +18,52 @@ import com.kalahaboardgame.player.PlayerType;
  * <p/>
  * Created by amhamid on 7/23/15.
  */
-public abstract class Pit extends Observable implements Observer {
+public abstract class Pit implements Observable, Observer {
 
     private final PlayerType playerType;
     private final String pitIdentifier;
+    private final Map<EventType, Set<Observer>> observerMap;
     private int numberOfSeeds;
 
     public Pit(final PlayerType playerType, final String pitIdentifier, final int initialNumberOfSeeds) {
         this.playerType = playerType;
         this.pitIdentifier = pitIdentifier;
         this.numberOfSeeds = initialNumberOfSeeds;
+        this.observerMap = new HashMap<>();
     }
 
     public abstract void initialMove();
     public abstract void publishNotEmptyEvent();
+
+    @Override
+    public void addObserver(final EventType eventType, final Observer observer) {
+        final Set<Observer> observers = new LinkedHashSet<>();
+        final Set<Observer> currentObservers = this.observerMap.get(eventType);
+        if(currentObservers != null) {
+            observers.addAll(currentObservers);
+        }
+        observers.add(observer);
+
+        this.observerMap.put(eventType, observers);
+    }
+
+    @Override
+    public void addObserver(final Set<EventType> eventTypes, final Observer observer) {
+        for (final EventType eventType : eventTypes) {
+            addObserver(eventType, observer);
+        }
+    }
+
+    @Override
+    public void notifyObservers(final Event event) {
+        final EventType eventType = event.getEventType();
+        final Set<Observer> observers = new LinkedHashSet<>();
+        observers.addAll(this.observerMap.get(eventType));
+
+        for (final Observer observer : observers) {
+            observer.update(this, event);
+        }
+    }
 
     public PlayerType getPlayerType() {
         return playerType;
@@ -43,7 +79,6 @@ public abstract class Pit extends Observable implements Observer {
 
     protected void publishEvent(final PlayerType playerType, final EventType eventType, final int numberOfSeeds) {
         final Event event = new Event(playerType, getPitIdentifier(), eventType, numberOfSeeds);
-        setChanged();
         notifyObservers(event);
     }
 

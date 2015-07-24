@@ -5,8 +5,10 @@ import java.util.Set;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.kalahaboardgame.logger.ReplayAbilityLogger;
+import com.kalahaboardgame.event.EventType;
+import com.kalahaboardgame.logger.ReplayableEventLogger;
 import com.kalahaboardgame.pit.Pit;
 import com.kalahaboardgame.pit.impl.KalahaPit;
 import com.kalahaboardgame.pit.impl.NormalPit;
@@ -57,13 +59,17 @@ public class KalahaBoard {
     private final KalahaPit kalahaPitPlayer2;
 
     private final Referee referee;
-    private final ReplayAbilityLogger replayAbilityLogger;
+    private final ReplayableEventLogger replayableEventLogger;
     private final Set<Pit> pitsForPlayer1;
     private final Set<Pit> pitsForPlayer2;
     private final Set<Pit> allPits;
 
 
     public KalahaBoard(final int initialNumberOfSeeds) {
+        if (initialNumberOfSeeds <= 0) {
+            throw new IllegalArgumentException("initial number of seeds should be bigger than 0");
+        }
+
         // set up pits for Player 1
         pit1 = new NormalPit(PlayerType.PLAYER_1, "Pit 1", initialNumberOfSeeds);
         pit2 = new NormalPit(PlayerType.PLAYER_1, "Pit 2", initialNumberOfSeeds);
@@ -91,15 +97,18 @@ public class KalahaBoard {
 
         // initialize observers
         referee = new Referee(getPitIdentifierForPlayer1(), getPitIdentifierForPlayer2());
-        replayAbilityLogger = new ReplayAbilityLogger();
+        replayableEventLogger = new ReplayableEventLogger();
     }
 
     public void configureBoard() {
-        registerNeighbors();
-        registerReferee();
-        registerReplayAbilityLogger();
+        // this is registered first to make sure that we can track events as they inserted.
+        registerReplayableEventLogger();
 
-        // this is to tell observers that all pits are ready and filled with seeds
+        registerNeighbors();
+        registerOpposites();
+        registerReferee();
+
+        // this is to tell observers that all pits are ready and filled with seeds (except the 2 Kalaha pits)
         publishNotEmptyEventForAllPits();
     }
 
@@ -112,39 +121,82 @@ public class KalahaBoard {
      * - and so on, until we have a circular connection (a connected graph)
      */
     private void registerNeighbors() {
-        pit1.addObserver(pit2);
-        pit2.addObserver(pit3);
-        pit3.addObserver(pit4);
-        pit4.addObserver(pit5);
-        pit5.addObserver(pit6);
-        pit6.addObserver(kalahaPitPlayer1);
-        kalahaPitPlayer1.addObserver(pit7);
-        pit7.addObserver(pit8);
-        pit8.addObserver(pit9);
-        pit9.addObserver(pit10);
-        pit10.addObserver(pit11);
-        pit11.addObserver(pit12);
-        pit12.addObserver(kalahaPitPlayer2);
-        kalahaPitPlayer2.addObserver(pit1);
+        final Set<EventType> eventTypes = new LinkedHashSet<>();
+        eventTypes.add(EventType.INITIAL_MOVE);
+        eventTypes.add(EventType.MOVE);
+        eventTypes.add(EventType.LAST_MOVE);
+
+        pit1.addObserver(eventTypes, pit2);
+        pit2.addObserver(eventTypes, pit3);
+        pit3.addObserver(eventTypes, pit4);
+        pit4.addObserver(eventTypes, pit5);
+        pit5.addObserver(eventTypes, pit6);
+        pit6.addObserver(eventTypes, kalahaPitPlayer1);
+        kalahaPitPlayer1.addObserver(eventTypes, pit7);
+        pit7.addObserver(eventTypes, pit8);
+        pit8.addObserver(eventTypes, pit9);
+        pit9.addObserver(eventTypes, pit10);
+        pit10.addObserver(eventTypes, pit11);
+        pit11.addObserver(eventTypes, pit12);
+        pit12.addObserver(eventTypes, kalahaPitPlayer2);
+        kalahaPitPlayer2.addObserver(eventTypes, pit1);
+    }
+
+    /**
+     * Register opposites.
+     * See class documentation above for board schema.
+     */
+    private void registerOpposites() {
+        pit1.addObserver(EventType.CAPTURE_SEEDS, pit12);
+        pit12.addObserver(EventType.CAPTURE_SEEDS, pit1);
+        pit2.addObserver(EventType.CAPTURE_SEEDS, pit11);
+        pit11.addObserver(EventType.CAPTURE_SEEDS, pit2);
+        pit3.addObserver(EventType.CAPTURE_SEEDS, pit10);
+        pit10.addObserver(EventType.CAPTURE_SEEDS, pit3);
+        pit4.addObserver(EventType.CAPTURE_SEEDS, pit9);
+        pit9.addObserver(EventType.CAPTURE_SEEDS, pit4);
+        pit5.addObserver(EventType.CAPTURE_SEEDS, pit8);
+        pit8.addObserver(EventType.CAPTURE_SEEDS, pit5);
+        pit6.addObserver(EventType.CAPTURE_SEEDS, pit7);
+        pit7.addObserver(EventType.CAPTURE_SEEDS, pit6);
+
+        pit1.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+        pit12.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer1);
+        pit2.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+        pit11.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer1);
+        pit3.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+        pit10.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer1);
+        pit4.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+        pit9.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer1);
+        pit5.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+        pit8.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer1);
+        pit6.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+        pit7.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer1);
     }
 
     /**
      * Register referee to all pits.
      */
     private void registerReferee() {
+        final Set<EventType> eventTypes = new LinkedHashSet<>();
+        eventTypes.add(EventType.EMPTY);
+        eventTypes.add(EventType.NOT_EMPTY);
+        eventTypes.add(EventType.CHANGE_TURN);
+
         for (final Pit pit : allPits) {
-            pit.addObserver(referee);
+            pit.addObserver(eventTypes, referee);
         }
     }
-
-    // TODO register opposites !!
 
     /**
      * Register logger (for event replay-ability) to all pits.
      */
-    private void registerReplayAbilityLogger() {
+    private void registerReplayableEventLogger() {
+        // interested in all event types
+        final Set<EventType> eventTypes = new LinkedHashSet<>(Lists.newArrayList(EventType.values()));
+
         for (final Pit pit : allPits) {
-            pit.addObserver(replayAbilityLogger);
+            pit.addObserver(eventTypes, replayableEventLogger);
         }
     }
 

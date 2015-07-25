@@ -1,10 +1,10 @@
-package com.kalahaboardgame.pubsub.pit.impl;
+package com.ammar.kalahacorelibrary.pubsub.pit.impl;
 
-import com.kalahaboardgame.event.Event;
-import com.kalahaboardgame.event.EventType;
-import com.kalahaboardgame.pubsub.pit.Pit;
-import com.kalahaboardgame.player.PlayerType;
-import com.kalahaboardgame.pubsub.Observable;
+import com.ammar.kalahacorelibrary.event.Event;
+import com.ammar.kalahacorelibrary.event.EventType;
+import com.ammar.kalahacorelibrary.player.PlayerType;
+import com.ammar.kalahacorelibrary.pubsub.Observable;
+import com.ammar.kalahacorelibrary.pubsub.pit.Pit;
 
 /**
  * Normal pit is representing one of the 6 pits for each player.

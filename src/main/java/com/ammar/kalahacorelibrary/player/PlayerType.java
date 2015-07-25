@@ -1,4 +1,4 @@
-package com.kalahaboardgame.player;
+package com.ammar.kalahacorelibrary.player;
 
 /**
  * Player type: player 1 and player 2.

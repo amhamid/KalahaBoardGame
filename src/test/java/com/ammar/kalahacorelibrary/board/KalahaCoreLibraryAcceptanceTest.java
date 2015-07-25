@@ -1,4 +1,4 @@
-package com.kalahaboardgame.board;
+package com.ammar.kalahacorelibrary.board;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -7,14 +7,14 @@ import static org.junit.Assert.assertThat;
 import java.util.Map;
 import java.util.Set;
 
-import com.kalahaboardgame.player.PlayerType;
-import com.kalahaboardgame.pubsub.pit.impl.KalahaPit;
-import com.kalahaboardgame.pubsub.pit.impl.NormalPit;
-import com.kalahaboardgame.pubsub.referee.Referee;
+import com.ammar.kalahacorelibrary.player.PlayerType;
+import com.ammar.kalahacorelibrary.pubsub.pit.impl.KalahaPit;
+import com.ammar.kalahacorelibrary.pubsub.pit.impl.NormalPit;
+import com.ammar.kalahacorelibrary.pubsub.referee.Referee;
 import org.junit.Test;
 
 /**
- * Kalaha Board Game Acceptance Tests
+ * Kalaha Core Library Acceptance Tests
  * <p/>
  * <pre>
  *
@@ -35,7 +35,7 @@ import org.junit.Test;
  * <p/>
  * Created by amhamid on 7/23/15.
  */
-public class KalahaBoardGameAcceptanceTest {
+public class KalahaCoreLibraryAcceptanceTest {
 
     /**
      * Scenario 1:

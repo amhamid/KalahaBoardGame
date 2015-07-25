@@ -1,4 +1,4 @@
-package com.kalahaboardgame.pubsub.referee;
+package com.ammar.kalahacorelibrary.pubsub.referee;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -7,12 +7,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import com.kalahaboardgame.event.Event;
-import com.kalahaboardgame.event.EventType;
-import com.kalahaboardgame.pubsub.pit.Pit;
-import com.kalahaboardgame.player.PlayerType;
-import com.kalahaboardgame.pubsub.Observable;
-import com.kalahaboardgame.pubsub.Observer;
+import com.ammar.kalahacorelibrary.pubsub.Observable;
+import com.ammar.kalahacorelibrary.pubsub.Observer;
+import com.ammar.kalahacorelibrary.pubsub.pit.Pit;
+import com.ammar.kalahacorelibrary.event.Event;
+import com.ammar.kalahacorelibrary.event.EventType;
+import com.ammar.kalahacorelibrary.player.PlayerType;
 
 /**
  * Referee to decide player's turn and who wins.

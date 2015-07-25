@@ -1,8 +1,8 @@
-package com.kalahaboardgame.pubsub.logger;
+package com.ammar.kalahacorelibrary.pubsub.logger;
 
-import com.kalahaboardgame.event.Event;
-import com.kalahaboardgame.pubsub.Observable;
-import com.kalahaboardgame.pubsub.Observer;
+import com.ammar.kalahacorelibrary.event.Event;
+import com.ammar.kalahacorelibrary.pubsub.Observable;
+import com.ammar.kalahacorelibrary.pubsub.Observer;
 import org.apache.log4j.Logger;
 
 /**

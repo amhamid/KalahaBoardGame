@@ -1,6 +1,6 @@
-package com.kalahaboardgame.event;
+package com.ammar.kalahacorelibrary.event;
 
-import com.kalahaboardgame.player.PlayerType;
+import com.ammar.kalahacorelibrary.player.PlayerType;
 
 /**
  * Represent an immutable Event object being sent around, containing information like origin pit, number of seed, event type, etc.

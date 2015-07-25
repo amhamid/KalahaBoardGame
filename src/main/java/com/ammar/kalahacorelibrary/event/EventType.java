@@ -1,4 +1,4 @@
-package com.kalahaboardgame.event;
+package com.ammar.kalahacorelibrary.event;
 
 /**
  * This is to indicate possible event types.

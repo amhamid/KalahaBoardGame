@@ -1,6 +1,6 @@
-package com.kalahaboardgame.pubsub;
+package com.ammar.kalahacorelibrary.pubsub;
 
-import com.kalahaboardgame.event.Event;
+import com.ammar.kalahacorelibrary.event.Event;
 
 /**
  * Custom Observer interface (a variant of java.util.Observer) where we can update based on Event rather than on plain Object.

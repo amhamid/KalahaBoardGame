@@ -1,9 +1,9 @@
-package com.kalahaboardgame.pubsub;
+package com.ammar.kalahacorelibrary.pubsub;
 
 import java.util.Set;
 
-import com.kalahaboardgame.event.Event;
-import com.kalahaboardgame.event.EventType;
+import com.ammar.kalahacorelibrary.event.Event;
+import com.ammar.kalahacorelibrary.event.EventType;
 
 /**
  * Custom Observable interface (variant of java.util.Observable) where we can add Observer based on event type.

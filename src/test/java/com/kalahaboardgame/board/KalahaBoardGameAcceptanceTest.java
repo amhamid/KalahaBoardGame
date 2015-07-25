@@ -52,6 +52,8 @@ public class KalahaBoardGameAcceptanceTest {
      */
     @Test
     public void scenario1() {
+        System.out.printf("\nStart test scenario 1\n");
+
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         final NormalPit pit1 = kalahaBoard.getPit1();
@@ -118,6 +120,8 @@ public class KalahaBoardGameAcceptanceTest {
      */
     @Test
     public void scenario2() {
+        System.out.printf("\nStart test scenario 2\n");
+
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         final NormalPit pit7 = kalahaBoard.getPit7();
@@ -178,6 +182,8 @@ public class KalahaBoardGameAcceptanceTest {
      */
     @Test
     public void scenario3() {
+        System.out.printf("\nStart test scenario 3\n");
+
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         final NormalPit pit1 = kalahaBoard.getPit1();
@@ -249,6 +255,8 @@ public class KalahaBoardGameAcceptanceTest {
      */
     @Test
     public void scenario4() {
+        System.out.printf("\nStart test scenario 4\n");
+
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         final NormalPit pit7 = kalahaBoard.getPit7();
@@ -318,6 +326,8 @@ public class KalahaBoardGameAcceptanceTest {
      */
     @Test
     public void scenario5() {
+        System.out.printf("\nStart test scenario 5\n");
+
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         // set pit 3 to have 1 seed
@@ -360,6 +370,8 @@ public class KalahaBoardGameAcceptanceTest {
      */
     @Test
     public void scenario6() {
+        System.out.printf("\nStart test scenario 6\n");
+
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         // set pit 11 to have 1 seed
@@ -400,6 +412,8 @@ public class KalahaBoardGameAcceptanceTest {
      */
     @Test
     public void scenario7() {
+        System.out.printf("\nStart test scenario 7\n");
+
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         // set pit 3 to have 1 seed
@@ -442,6 +456,8 @@ public class KalahaBoardGameAcceptanceTest {
      */
     @Test
     public void scenario8() {
+        System.out.printf("\nStart test scenario 8\n");
+
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         // set pit 11 to have 1 seed
@@ -481,6 +497,8 @@ public class KalahaBoardGameAcceptanceTest {
      */
     @Test
     public void scenario9() {
+        System.out.printf("\nStart test scenario 9\n");
+
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         // make pit 1..5 empty
@@ -510,6 +528,8 @@ public class KalahaBoardGameAcceptanceTest {
      */
     @Test
     public void scenario10() {
+        System.out.printf("\nStart test scenario 10\n");
+
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         // make pit 7..12 empty
@@ -535,6 +555,8 @@ public class KalahaBoardGameAcceptanceTest {
      */
     @Test
     public void scenario11() {
+        System.out.printf("\nStart test scenario 11\n");
+
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         kalahaBoard.getKalahaPitPlayer1().setNumberOfSeeds(35);
@@ -554,6 +576,8 @@ public class KalahaBoardGameAcceptanceTest {
      */
     @Test
     public void scenario12() {
+        System.out.printf("\nStart test scenario 12\n");
+
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         kalahaBoard.getKalahaPitPlayer2().setNumberOfSeeds(35);
@@ -564,6 +588,72 @@ public class KalahaBoardGameAcceptanceTest {
         pit12.initialMove();
 
         assertThat("TIE game", kalahaBoard.getReferee().getWinner(), is(nullValue()));
+    }
+
+    /**
+     * Scenario 13:
+     * Player 1: Pit 6 has 2 seeds, pit 7 is empty, player 1 moves his 2 seeds from pit 6 to pit 7
+     * <p/>
+     * Expectations:
+     * - Player 1 doesn't capture anything
+     * - Switch to player 2
+     */
+    @Test
+    public void scenario13() {
+        System.out.printf("\nStart test scenario 13\n");
+
+        final KalahaBoard kalahaBoard = new KalahaBoard(6);
+
+        // set pit 6 to have 2 seed
+        final NormalPit pit6 = kalahaBoard.getPit6();
+        pit6.setNumberOfSeeds(2);
+
+        // set pit 7 empty
+        final NormalPit pit7 = kalahaBoard.getPit7();
+        pit7.setNumberOfSeeds(0);
+
+        // move 2 seed from pit 6 to pit 7
+        pit6.initialMove();
+
+        assertThat("Pit 6 should have 0 seeds", kalahaBoard.getPit6().getNumberOfSeeds(), is(0));
+        assertThat("Pit 7 should have 1 seeds", kalahaBoard.getPit7().getNumberOfSeeds(), is(1));
+        assertThat("Kalaha Pit for player 1 should have 1 seeds (0 seeds originally + 1 pits from pit 6) --> no capture happens", kalahaBoard.getKalahaPitPlayer1().getNumberOfSeeds(), is(1));
+
+        final PlayerType currentPlayerTurn = kalahaBoard.getReferee().getCurrentPlayerTurn();
+        assertThat("Current player should switch to player 2", currentPlayerTurn, is(PlayerType.PLAYER_2));
+    }
+
+    /**
+     * Scenario 14:
+     * Player 2: Pit 12 has 2 seeds, pit 1 is empty, player 2 moves his 2 seeds from pit 12 to pit 1
+     * <p/>
+     * Expectations:
+     * - Player 2 doesn't capture anything
+     * - Switch to player 1
+     */
+    @Test
+    public void scenario14() {
+        System.out.printf("\nStart test scenario 14\n");
+
+        final KalahaBoard kalahaBoard = new KalahaBoard(6);
+
+        // set pit 12 to have 2 seed
+        final NormalPit pit12 = kalahaBoard.getPit12();
+        pit12.setNumberOfSeeds(2);
+
+        // set pit 1 empty
+        final NormalPit pit1 = kalahaBoard.getPit1();
+        pit1.setNumberOfSeeds(0);
+
+        // move 2 seed from pit 12 to pit 1
+        pit12.initialMove();
+
+        assertThat("Pit 12 should have 0 seeds", kalahaBoard.getPit12().getNumberOfSeeds(), is(0));
+        assertThat("Pit 1 should have 1 seeds", kalahaBoard.getPit1().getNumberOfSeeds(), is(1));
+        assertThat("Kalaha Pit for player 2 should have 1 seeds (0 seeds originally + 1 pits from pit 12) --> no capture happens", kalahaBoard.getKalahaPitPlayer2().getNumberOfSeeds(), is(1));
+
+        final PlayerType currentPlayerTurn = kalahaBoard.getReferee().getCurrentPlayerTurn();
+        assertThat("Current player should switch to player 1", currentPlayerTurn, is(PlayerType.PLAYER_1));
     }
 
 }

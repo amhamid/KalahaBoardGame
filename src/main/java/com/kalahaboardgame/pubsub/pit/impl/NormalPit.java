@@ -41,8 +41,8 @@ public class NormalPit extends Pit {
             case INITIAL_MOVE:
             case MOVE:
                 
-                if(getNumberOfSeeds() == 0 && event.getNumberOfSeeds() == 1) {
-                    // publish CAPTURE_SEEDS event when current pit is empty and event has only 1 seed
+                if(shouldSendCaptureEvent(event)) {
+                    // publish CAPTURE_SEEDS event when current pit is empty and event has only 1 seed and current player owns the pit
                     publishEvent(event.getPlayerType(), EventType.CAPTURE_SEEDS, 1);
                 } else {
                     // propagate event with original event with number of seeds - 1
@@ -56,7 +56,7 @@ public class NormalPit extends Pit {
                 }
                 break;
             case LAST_MOVE:
-                if (getNumberOfSeeds() == 0) { // empty pit
+                if (shouldSendCaptureEvent(event)) { // empty pit
                     // no need to update seed with 1, since this is a trigger for CAPTURE_SEEDS event
                     publishEvent(event.getPlayerType(), EventType.CAPTURE_SEEDS, 1);
                 } else {
@@ -74,6 +74,12 @@ public class NormalPit extends Pit {
             default:
                 break;
         }
+    }
+
+    // check if current pit is empty and event has only 1 seed and current player owns the pit
+    // this is as an indication whether we should send CAPTURE event
+    private boolean shouldSendCaptureEvent(Event event) {
+        return getNumberOfSeeds() == 0 && event.getNumberOfSeeds() == 1 && getPlayerType() == event.getPlayerType();
     }
 
     public void setNumberOfSeeds(int numberOfSeeds) {

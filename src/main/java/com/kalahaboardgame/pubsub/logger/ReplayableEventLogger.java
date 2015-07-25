@@ -1,4 +1,4 @@
-package com.kalahaboardgame.logger;
+package com.kalahaboardgame.pubsub.logger;
 
 import com.kalahaboardgame.event.Event;
 import com.kalahaboardgame.pubsub.Observable;

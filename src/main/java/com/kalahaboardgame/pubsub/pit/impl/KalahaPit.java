@@ -1,8 +1,8 @@
-package com.kalahaboardgame.pit.impl;
+package com.kalahaboardgame.pubsub.pit.impl;
 
 import com.kalahaboardgame.event.Event;
 import com.kalahaboardgame.event.EventType;
-import com.kalahaboardgame.pit.Pit;
+import com.kalahaboardgame.pubsub.pit.Pit;
 import com.kalahaboardgame.player.PlayerType;
 import com.kalahaboardgame.pubsub.Observable;
 
@@ -25,7 +25,7 @@ public class KalahaPit extends Pit {
 
     @Override
     public void publishNotEmptyEvent() {
-        // no need to publish not empty event for Kalaha pit
+        // no need to publish NOT_EMPTY event for Kalaha pit
     }
 
     @Override
@@ -34,12 +34,13 @@ public class KalahaPit extends Pit {
             case INITIAL_MOVE:
             case MOVE:
                 final int numberOfSeedsInTheEventThatNeedToBePropagated;
-                // only update Kalaha pit when current player is the owner of the Kalaha pit
+
                 if (getPlayerType() == event.getPlayerType()) {
+                    // only update Kalaha pit when current player is the owner of the Kalaha pit
                     addOneSeed();
                     numberOfSeedsInTheEventThatNeedToBePropagated = event.getNumberOfSeeds() - 1;
                 } else {
-                    // propagate the last move event, since player is not the owner of the kalaha pit
+                    // since the player isn't the owner of the kalaha pit then don't take any seed from the event
                     numberOfSeedsInTheEventThatNeedToBePropagated = event.getNumberOfSeeds();
                 }
 
@@ -51,8 +52,8 @@ public class KalahaPit extends Pit {
                 break;
             case LAST_MOVE:
                 if (getPlayerType() == event.getPlayerType()) {
-                    addOneSeed();
                     // for the last move in kalaha pit, the current player can play again
+                    addOneSeed();
                     publishEvent(event.getPlayerType(), EventType.CHANGE_TURN, event.getNumberOfSeeds()); // in CHANGE_TURN, number of seed is ignored
                 } else {
                     // propagate the last move event, since player is not the owner of the kalaha pit
@@ -63,7 +64,7 @@ public class KalahaPit extends Pit {
             case STORE_SEEDS:
                 setNumberOfSeeds(getNumberOfSeeds() + event.getNumberOfSeeds());
                 publishEvent(event.getPlayerType(), EventType.STORED, getNumberOfSeeds());
-                publishEvent(event.getPlayerType().changeTurn(), EventType.CHANGE_TURN, event.getNumberOfSeeds());
+                publishEvent(event.getPlayerType().changeTurn(), EventType.CHANGE_TURN, getNumberOfSeeds());
                 break;
             default:
                 break;

@@ -1,4 +1,4 @@
-package com.kalahaboardgame.referee;
+package com.kalahaboardgame.pubsub.referee;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -8,7 +8,7 @@ import java.util.Set;
 
 import com.kalahaboardgame.event.Event;
 import com.kalahaboardgame.event.EventType;
-import com.kalahaboardgame.pit.Pit;
+import com.kalahaboardgame.pubsub.pit.Pit;
 import com.kalahaboardgame.player.PlayerType;
 import com.kalahaboardgame.pubsub.Observable;
 import com.kalahaboardgame.pubsub.Observer;
@@ -78,7 +78,6 @@ public class Referee implements Observable, Observer {
                     }
 
                     publishWinnerEvent(totalSeedPlayer1, totalSeedPlayer2);
-
                 } else if (emptyPits.get(PlayerType.PLAYER_2).size() == 6) { // all pits for player 2 is empty
                     // compare Kalaha pit from player 2 with the rest of player 1
                     final int totalSeedPlayer2 = pitsForPlayer2.get("KalahaPit 2").getNumberOfSeeds();
@@ -115,7 +114,8 @@ public class Referee implements Observable, Observer {
         } else if (totalSeedPlayer2 > totalSeedPlayer1) {
             publishEvent(PlayerType.PLAYER_2, EventType.WINS, totalSeedPlayer2);
             this.winner = PlayerType.PLAYER_2;
-        } else { // tie game
+        } else {
+            // tie game
             publishEvent(PlayerType.PLAYER_1, EventType.TIE_GAME, totalSeedPlayer1);
         }
     }

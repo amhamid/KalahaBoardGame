@@ -1,3 +1,5 @@
+package com.kalahaboardgame.board;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -5,11 +7,10 @@ import static org.junit.Assert.assertThat;
 import java.util.Map;
 import java.util.Set;
 
-import com.kalahaboardgame.KalahaBoard;
-import com.kalahaboardgame.pit.impl.KalahaPit;
-import com.kalahaboardgame.pit.impl.NormalPit;
 import com.kalahaboardgame.player.PlayerType;
-import com.kalahaboardgame.referee.Referee;
+import com.kalahaboardgame.pubsub.pit.impl.KalahaPit;
+import com.kalahaboardgame.pubsub.pit.impl.NormalPit;
+import com.kalahaboardgame.pubsub.referee.Referee;
 import org.junit.Test;
 
 /**

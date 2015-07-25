@@ -1,8 +1,8 @@
-package com.kalahaboardgame.pit.impl;
+package com.kalahaboardgame.pubsub.pit.impl;
 
 import com.kalahaboardgame.event.Event;
 import com.kalahaboardgame.event.EventType;
-import com.kalahaboardgame.pit.Pit;
+import com.kalahaboardgame.pubsub.pit.Pit;
 import com.kalahaboardgame.player.PlayerType;
 import com.kalahaboardgame.pubsub.Observable;
 
@@ -40,20 +40,18 @@ public class NormalPit extends Pit {
         switch (event.getEventType()) {
             case INITIAL_MOVE:
             case MOVE:
-                // publish CAPTURE_SEEDS event when current pit is empty and event has only 1 seed
+                
                 if(getNumberOfSeeds() == 0 && event.getNumberOfSeeds() == 1) {
+                    // publish CAPTURE_SEEDS event when current pit is empty and event has only 1 seed
                     publishEvent(event.getPlayerType(), EventType.CAPTURE_SEEDS, 1);
                 } else {
-                    addOneSeed();
-
                     // propagate event with original event with number of seeds - 1
+                    addOneSeed();
                     final int numberOfSeedsInTheEventThatNeedToBePropagated = event.getNumberOfSeeds() - 1;
                     if (numberOfSeedsInTheEventThatNeedToBePropagated == 1) {
                         publishEvent(event.getPlayerType(), EventType.LAST_MOVE, numberOfSeedsInTheEventThatNeedToBePropagated);
                     } else if (numberOfSeedsInTheEventThatNeedToBePropagated > 1) {
                         publishEvent(event.getPlayerType(), EventType.MOVE, numberOfSeedsInTheEventThatNeedToBePropagated);
-                    } else {
-                        publishEvent(event.getPlayerType(), EventType.LAST_MOVE, numberOfSeedsInTheEventThatNeedToBePropagated);
                     }
                 }
                 break;

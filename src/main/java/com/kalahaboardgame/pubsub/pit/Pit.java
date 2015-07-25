@@ -1,4 +1,4 @@
-package com.kalahaboardgame.pit;
+package com.kalahaboardgame.pubsub.pit;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;

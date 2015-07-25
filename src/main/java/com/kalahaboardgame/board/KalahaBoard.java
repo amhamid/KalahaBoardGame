@@ -1,4 +1,4 @@
-package com.kalahaboardgame;
+package com.kalahaboardgame.board;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -7,12 +7,12 @@ import java.util.Set;
 
 import com.google.common.collect.Lists;
 import com.kalahaboardgame.event.EventType;
-import com.kalahaboardgame.logger.ReplayableEventLogger;
-import com.kalahaboardgame.pit.Pit;
-import com.kalahaboardgame.pit.impl.KalahaPit;
-import com.kalahaboardgame.pit.impl.NormalPit;
+import com.kalahaboardgame.pubsub.logger.ReplayableEventLogger;
+import com.kalahaboardgame.pubsub.pit.Pit;
+import com.kalahaboardgame.pubsub.pit.impl.KalahaPit;
+import com.kalahaboardgame.pubsub.pit.impl.NormalPit;
 import com.kalahaboardgame.player.PlayerType;
-import com.kalahaboardgame.referee.Referee;
+import com.kalahaboardgame.pubsub.referee.Referee;
 
 /**
  * Kalaha Board.
@@ -39,22 +39,19 @@ import com.kalahaboardgame.referee.Referee;
  */
 public class KalahaBoard {
 
-    // set up normal pit for Player 1
     private final NormalPit pit1;
     private final NormalPit pit2;
     private final NormalPit pit3;
     private final NormalPit pit4;
     private final NormalPit pit5;
     private final NormalPit pit6;
-    private final KalahaPit kalahaPitPlayer1;
-
-    // set up normal pit for Player 2
     private final NormalPit pit7;
     private final NormalPit pit8;
     private final NormalPit pit9;
     private final NormalPit pit10;
     private final NormalPit pit11;
     private final NormalPit pit12;
+    private final KalahaPit kalahaPitPlayer1;
     private final KalahaPit kalahaPitPlayer2;
 
     private final Referee referee;
@@ -115,10 +112,24 @@ public class KalahaBoard {
     /**
      * Register neighbors.
      * <p/>
-     * e.g.
-     * - pit2 is observing events from pit1
-     * - pit3 is observing events from pit4
+     * <pre>
+     *
+     *     -------------------------------------------------------------------------
+     *     |           Pit12 <-- Pit11 <-- Pit10 <-- Pit9  <-- Pit8  <--  Pit7     |
+     *     |      |                                                          ^     |
+     *     |      |                                                          \     |
+     *     | KalahaPit2                                                 KalahaPit1 |
+     *     |      \                                                          ^     |
+     *     |      |                                                          |     |
+     *     |           Pit1 --> Pit2 --> Pit3 --> Pit4 --> Pit5 -->  Pit6          |
+     *     -------------------------------------------------------------------------
+     *
+     * Note:
+     * - '-->' means publish events
+     * - pit1 is publishing events and pit2 is observing events from pit1
+     * - pit2 is publishing events and pit3 is observing events from pit4
      * - and so on, until we have a circular connection (a connected graph)
+     * </pre>
      */
     private void registerNeighbors() {
         final Set<EventType> eventTypes = new LinkedHashSet<>();
@@ -144,38 +155,61 @@ public class KalahaBoard {
 
     /**
      * Register opposites.
-     * See class documentation above for board schema.
+     * <p/>
+     * <pre>
+     *
+     * Example of one registration:
+     *
+     *     --------------------------------------------------------------------------
+     *     |             Pit12   Pit11   Pit10   Pit9    Pit8    Pit7               |
+     *     |                      ^  |                                              |
+     *     | KalahaPit2           |  |---------------------------------> KalahaPit1 |
+     *     |                      |                                                 |
+     *     |             Pit1    Pit2    Pit3    Pit4    Pit5    Pit6               |
+     *     --------------------------------------------------------------------------
+     *
+     * Note:
+     * - '-->' means publish events
+     * - pit 2 is publishing events and pit 11 is observing events from pit1
+     * - pit 11 is publishing events and KalahaPit 1 is observing events from pit 11
+     * - this also applies to the other direction (from pit 11 to pit 1 and pit 1 to KalahaPit 2)
+     * </pre>
      */
     private void registerOpposites() {
         pit1.addObserver(EventType.CAPTURE_SEEDS, pit12);
-        pit12.addObserver(EventType.CAPTURE_SEEDS, pit1);
-        pit2.addObserver(EventType.CAPTURE_SEEDS, pit11);
-        pit11.addObserver(EventType.CAPTURE_SEEDS, pit2);
-        pit3.addObserver(EventType.CAPTURE_SEEDS, pit10);
-        pit10.addObserver(EventType.CAPTURE_SEEDS, pit3);
-        pit4.addObserver(EventType.CAPTURE_SEEDS, pit9);
-        pit9.addObserver(EventType.CAPTURE_SEEDS, pit4);
-        pit5.addObserver(EventType.CAPTURE_SEEDS, pit8);
-        pit8.addObserver(EventType.CAPTURE_SEEDS, pit5);
-        pit6.addObserver(EventType.CAPTURE_SEEDS, pit7);
-        pit7.addObserver(EventType.CAPTURE_SEEDS, pit6);
-
-        pit1.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
         pit12.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer1);
-        pit2.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+        pit12.addObserver(EventType.CAPTURE_SEEDS, pit1);
+        pit1.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+
+        pit2.addObserver(EventType.CAPTURE_SEEDS, pit11);
         pit11.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer1);
-        pit3.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+        pit11.addObserver(EventType.CAPTURE_SEEDS, pit2);
+        pit2.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+
+        pit3.addObserver(EventType.CAPTURE_SEEDS, pit10);
         pit10.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer1);
-        pit4.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+        pit10.addObserver(EventType.CAPTURE_SEEDS, pit3);
+        pit3.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+
+        pit4.addObserver(EventType.CAPTURE_SEEDS, pit9);
         pit9.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer1);
-        pit5.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+        pit9.addObserver(EventType.CAPTURE_SEEDS, pit4);
+        pit4.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+
+        pit5.addObserver(EventType.CAPTURE_SEEDS, pit8);
         pit8.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer1);
-        pit6.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+        pit8.addObserver(EventType.CAPTURE_SEEDS, pit5);
+        pit5.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+
+        pit6.addObserver(EventType.CAPTURE_SEEDS, pit7);
         pit7.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer1);
+        pit7.addObserver(EventType.CAPTURE_SEEDS, pit6);
+        pit6.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
     }
 
     /**
      * Register referee to all pits.
+     * Referee decides which player turn and who win the game.
      */
     private void registerReferee() {
         final Set<EventType> eventTypes = new LinkedHashSet<>();
@@ -190,6 +224,7 @@ public class KalahaBoard {
 
     /**
      * Register logger (for event replay-ability) to all pits.
+     * This is to make it possible to recreate the whole game situation from events.
      */
     private void registerReplayableEventLogger() {
         // interested in all event types

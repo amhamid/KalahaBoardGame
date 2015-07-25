@@ -15,7 +15,7 @@
 
 ```
 
-This repository defines components needed for Kalaha board game and its game rules. It is an Event-Driven library where every action results in an event.
+This repository defines components needed for [Kalaha board game](https://en.wikipedia.org/wiki/Kalah) and its game rules. It is an Event-Driven library where every action results in an event.
 
 The benefits about this event-driven approach are:
 

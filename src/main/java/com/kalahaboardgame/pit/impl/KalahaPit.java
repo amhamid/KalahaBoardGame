@@ -70,4 +70,12 @@ public class KalahaPit extends Pit {
         }
     }
 
+    public void setNumberOfSeeds(int numberOfSeeds) {
+        super.setNumberOfSeeds(numberOfSeeds);
+    }
+
+    public void addOneSeed() {
+        setNumberOfSeeds(getNumberOfSeeds() + 1);
+    }
+
 }

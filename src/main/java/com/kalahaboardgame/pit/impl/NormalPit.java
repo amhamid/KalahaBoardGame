@@ -26,9 +26,6 @@ public class NormalPit extends Pit {
         // remove all seeds
         removeAllSeed();
 
-        // publish empty event
-        publishEvent(getPlayerType(), EventType.EMPTY, getNumberOfSeeds());
-
         // publish event initial move
         publishEvent(getPlayerType(), EventType.INITIAL_MOVE, initialNumberOfSeeds);
     }
@@ -48,7 +45,6 @@ public class NormalPit extends Pit {
                     publishEvent(event.getPlayerType(), EventType.CAPTURE_SEEDS, 1);
                 } else {
                     addOneSeed();
-                    publishEvent(event.getPlayerType(), EventType.NOT_EMPTY, getNumberOfSeeds());
 
                     // propagate event with original event with number of seeds - 1
                     final int numberOfSeedsInTheEventThatNeedToBePropagated = event.getNumberOfSeeds() - 1;
@@ -67,7 +63,6 @@ public class NormalPit extends Pit {
                     publishEvent(event.getPlayerType(), EventType.CAPTURE_SEEDS, 1);
                 } else {
                     addOneSeed();
-                    publishEvent(event.getPlayerType(), EventType.NOT_EMPTY, getNumberOfSeeds());
                 }
 
                 // for the last move in normal pit, switch player turn (player may only play again, when the last seed is in his own Kalaha pit)
@@ -76,12 +71,28 @@ public class NormalPit extends Pit {
             case CAPTURE_SEEDS:
                 final int numberOfSeeds = getNumberOfSeeds();
                 removeAllSeed();
-                publishEvent(event.getPlayerType(), EventType.EMPTY, getNumberOfSeeds());
                 publishEvent(event.getPlayerType(), EventType.STORE_SEEDS, numberOfSeeds + event.getNumberOfSeeds());
                 break;
             default:
                 break;
         }
+    }
+
+    public void setNumberOfSeeds(int numberOfSeeds) {
+        super.setNumberOfSeeds(numberOfSeeds);
+        if(getNumberOfSeeds() == 0) {
+            publishEvent(getPlayerType(), EventType.EMPTY, getNumberOfSeeds());
+        } else {
+            publishEvent(getPlayerType(), EventType.NOT_EMPTY, getNumberOfSeeds());
+        }
+    }
+
+    public void addOneSeed() {
+        setNumberOfSeeds(getNumberOfSeeds() + 1);
+    }
+
+    public void removeAllSeed() {
+        setNumberOfSeeds(0);
     }
 
 }

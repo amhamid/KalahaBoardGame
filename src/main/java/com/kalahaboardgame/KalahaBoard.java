@@ -1,12 +1,11 @@
 package com.kalahaboardgame;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.kalahaboardgame.event.EventType;
 import com.kalahaboardgame.logger.ReplayableEventLogger;
 import com.kalahaboardgame.pit.Pit;
@@ -60,9 +59,7 @@ public class KalahaBoard {
 
     private final Referee referee;
     private final ReplayableEventLogger replayableEventLogger;
-    private final Set<Pit> pitsForPlayer1;
-    private final Set<Pit> pitsForPlayer2;
-    private final Set<Pit> allPits;
+    private final Map<String, Pit> allPits;
 
 
     public KalahaBoard(final int initialNumberOfSeeds) {
@@ -89,18 +86,21 @@ public class KalahaBoard {
         kalahaPitPlayer2 = new KalahaPit(PlayerType.PLAYER_2, "KalahaPit 2", 0);
 
         // assign pits for players
-        pitsForPlayer1 = getPitsForPlayer1();
-        pitsForPlayer2 = getPitsForPlayer2();
-        allPits = new LinkedHashSet<>();
-        allPits.addAll(pitsForPlayer1);
-        allPits.addAll(pitsForPlayer2);
+        final Map<String, Pit> pitsForPlayer1 = getPitsForPlayer1();
+        final Map<String, Pit> pitsForPlayer2 = getPitsForPlayer2();
+        allPits = new LinkedHashMap<>();
+        allPits.putAll(pitsForPlayer1);
+        allPits.putAll(pitsForPlayer2);
 
         // initialize observers
-        referee = new Referee(getPitIdentifierForPlayer1(), getPitIdentifierForPlayer2());
+        referee = new Referee(pitsForPlayer1, pitsForPlayer2);
         replayableEventLogger = new ReplayableEventLogger();
+
+        // configure board
+        this.configureBoard();
     }
 
-    public void configureBoard() {
+    private void configureBoard() {
         // this is registered first to make sure that we can track events as they inserted.
         registerReplayableEventLogger();
 
@@ -183,7 +183,7 @@ public class KalahaBoard {
         eventTypes.add(EventType.NOT_EMPTY);
         eventTypes.add(EventType.CHANGE_TURN);
 
-        for (final Pit pit : allPits) {
+        for (final Pit pit : allPits.values()) {
             pit.addObserver(eventTypes, referee);
         }
     }
@@ -195,64 +195,46 @@ public class KalahaBoard {
         // interested in all event types
         final Set<EventType> eventTypes = new LinkedHashSet<>(Lists.newArrayList(EventType.values()));
 
-        for (final Pit pit : allPits) {
+        for (final Pit pit : allPits.values()) {
             pit.addObserver(eventTypes, replayableEventLogger);
         }
+
+        referee.addObserver(eventTypes, replayableEventLogger);
     }
 
     // This is to let observers know that all pits has been filled with seeds
     private void publishNotEmptyEventForAllPits() {
-        for (final Pit pit : allPits) {
+        for (final Pit pit : allPits.values()) {
             pit.publishNotEmptyEvent();
         }
     }
 
     // get all pits for player 1
-    private Set<Pit> getPitsForPlayer1() {
-        final Set<Pit> pitsForPlayer1 = new LinkedHashSet<>();
-        pitsForPlayer1.add(pit1);
-        pitsForPlayer1.add(pit2);
-        pitsForPlayer1.add(pit3);
-        pitsForPlayer1.add(pit4);
-        pitsForPlayer1.add(pit5);
-        pitsForPlayer1.add(pit6);
-        pitsForPlayer1.add(kalahaPitPlayer1);
+    private Map<String, Pit> getPitsForPlayer1() {
+        final Map<String, Pit> pits = new LinkedHashMap<>();
+        pits.put(pit1.getPitIdentifier(), pit1);
+        pits.put(pit2.getPitIdentifier(), pit2);
+        pits.put(pit3.getPitIdentifier(), pit3);
+        pits.put(pit4.getPitIdentifier(), pit4);
+        pits.put(pit5.getPitIdentifier(), pit5);
+        pits.put(pit6.getPitIdentifier(), pit6);
+        pits.put(kalahaPitPlayer1.getPitIdentifier(), kalahaPitPlayer1);
 
-        return pitsForPlayer1;
+        return pits;
     }
 
     // get all pits for player 2
-    private Set<Pit> getPitsForPlayer2() {
-        final Set<Pit> pitsForPlayer2 = new LinkedHashSet<>();
-        pitsForPlayer2.add(pit7);
-        pitsForPlayer2.add(pit8);
-        pitsForPlayer2.add(pit9);
-        pitsForPlayer2.add(pit10);
-        pitsForPlayer2.add(pit11);
-        pitsForPlayer2.add(pit12);
-        pitsForPlayer2.add(kalahaPitPlayer2);
+    private Map<String, Pit> getPitsForPlayer2() {
+        final Map<String, Pit> pits = new LinkedHashMap<>();
+        pits.put(pit7.getPitIdentifier(), pit7);
+        pits.put(pit8.getPitIdentifier(), pit8);
+        pits.put(pit9.getPitIdentifier(), pit9);
+        pits.put(pit10.getPitIdentifier(), pit10);
+        pits.put(pit11.getPitIdentifier(), pit11);
+        pits.put(pit12.getPitIdentifier(), pit12);
+        pits.put(kalahaPitPlayer2.getPitIdentifier(), kalahaPitPlayer2);
 
-        return pitsForPlayer2;
-    }
-
-    // get all pits identifier for player 1
-    private Set<String> getPitIdentifierForPlayer1() {
-        return Sets.newHashSet(Collections2.transform(pitsForPlayer1, new Function<Pit, String>() {
-            @Override
-            public String apply(final Pit pit) {
-                return pit.getPitIdentifier();
-            }
-        }));
-    }
-
-    // get all pits identifier for player 2
-    private Set<String> getPitIdentifierForPlayer2() {
-        return Sets.newHashSet(Collections2.transform(pitsForPlayer2, new Function<Pit, String>() {
-            @Override
-            public String apply(final Pit pit) {
-                return pit.getPitIdentifier();
-            }
-        }));
+        return pits;
     }
 
     public NormalPit getPit1() {

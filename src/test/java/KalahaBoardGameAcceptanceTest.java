@@ -51,7 +51,6 @@ public class KalahaBoardGameAcceptanceTest {
     @Test
     public void scenario1() {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
-        kalahaBoard.configureBoard();
 
         final NormalPit pit1 = kalahaBoard.getPit1();
         pit1.initialMove();
@@ -118,7 +117,6 @@ public class KalahaBoardGameAcceptanceTest {
     @Test
     public void scenario2() {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
-        kalahaBoard.configureBoard();
 
         final NormalPit pit7 = kalahaBoard.getPit7();
         pit7.initialMove();
@@ -179,7 +177,6 @@ public class KalahaBoardGameAcceptanceTest {
     @Test
     public void scenario3() {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
-        kalahaBoard.configureBoard();
 
         final NormalPit pit1 = kalahaBoard.getPit1();
         pit1.setNumberOfSeeds(14);
@@ -251,7 +248,6 @@ public class KalahaBoardGameAcceptanceTest {
     @Test
     public void scenario4() {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
-        kalahaBoard.configureBoard();
 
         final NormalPit pit7 = kalahaBoard.getPit7();
         pit7.setNumberOfSeeds(14);
@@ -321,7 +317,6 @@ public class KalahaBoardGameAcceptanceTest {
     @Test
     public void scenario5() {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
-        kalahaBoard.configureBoard();
 
         // set pit 3 to have 1 seed
         final NormalPit pit3 = kalahaBoard.getPit3();
@@ -364,7 +359,6 @@ public class KalahaBoardGameAcceptanceTest {
     @Test
     public void scenario6() {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
-        kalahaBoard.configureBoard();
 
         // set pit 11 to have 1 seed
         final NormalPit pit11 = kalahaBoard.getPit11();
@@ -405,7 +399,6 @@ public class KalahaBoardGameAcceptanceTest {
     @Test
     public void scenario7() {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
-        kalahaBoard.configureBoard();
 
         // set pit 3 to have 1 seed
         final NormalPit pit3 = kalahaBoard.getPit3();
@@ -448,7 +441,6 @@ public class KalahaBoardGameAcceptanceTest {
     @Test
     public void scenario8() {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
-        kalahaBoard.configureBoard();
 
         // set pit 11 to have 1 seed
         final NormalPit pit11 = kalahaBoard.getPit11();
@@ -478,13 +470,60 @@ public class KalahaBoardGameAcceptanceTest {
     }
 
 
-    // Scenario 9:
-    // Player 1: all of his pits is empty, except pit 6 that has 1 seed, it is his turn then he move his last seed in pit 6 to his kalaha pit, then since all pits is empty and Kalaha pit for player 1 has more than
-    // player 2 has, therefore player 1 should win !
-    // win should override possibility to play again, since it is over
+    /**
+     * Scenario 9:
+     * Player 1: all of his pits is empty, except pit 6 that has 1 seed, it is his turn then he move his last seed in pit 6 to his kalaha pit,
+     * <p/>
+     * Expectations:
+     * - Since all pits is empty and Kalaha pit for player 1 has more than player 2 has (50 and 36 respectively), therefore player 1 wins.
+     */
+    @Test
+    public void scenario9() {
+        final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
-    // Scenario 10:
-    // do scenario 9 from player 2 perspective
+        // make pit 1..5 empty
+        kalahaBoard.getPit1().removeAllSeed();
+        kalahaBoard.getPit2().removeAllSeed();
+        kalahaBoard.getPit3().removeAllSeed();
+        kalahaBoard.getPit4().removeAllSeed();
+        kalahaBoard.getPit5().removeAllSeed();
+        kalahaBoard.getKalahaPitPlayer1().setNumberOfSeeds(50);
 
+        final NormalPit pit6 = kalahaBoard.getPit6();
+        pit6.setNumberOfSeeds(1);
+
+        pit6.initialMove();
+
+        assertThat("Player 1 wins", kalahaBoard.getReferee().getWinner(), is(PlayerType.PLAYER_1));
+    }
+
+    /**
+     * Scenario 10:
+     * Do scenario 9 from player 2 perspective
+     * <p/>
+     * Player 2: all of his pits is empty, except pit 12 that has 1 seed, it is his turn then he move his last seed in pit 12 to his kalaha pit,
+     * <p/>
+     * Expectations:
+     * - Since all pits is empty and Kalaha pit for player 2 has more than player 1 has (50 and 36 respectively), therefore player 2 wins.
+     */
+    @Test
+    public void scenario10() {
+        final KalahaBoard kalahaBoard = new KalahaBoard(6);
+
+        // make pit 1..5 empty
+        kalahaBoard.getPit7().removeAllSeed();
+        kalahaBoard.getPit8().removeAllSeed();
+        kalahaBoard.getPit9().removeAllSeed();
+        kalahaBoard.getPit10().removeAllSeed();
+        kalahaBoard.getPit11().removeAllSeed();
+        kalahaBoard.getKalahaPitPlayer2().setNumberOfSeeds(50);
+
+        final NormalPit pit12 = kalahaBoard.getPit12();
+        pit12.setNumberOfSeeds(1);
+
+        pit12.initialMove();
+
+        assertThat("Player 2 wins", kalahaBoard.getReferee().getWinner(), is(PlayerType.PLAYER_2));
+    }
 
 }

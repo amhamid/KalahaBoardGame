@@ -1,6 +1,6 @@
 package com.kalahaboardgame.pit;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -29,7 +29,7 @@ public abstract class Pit implements Observable, Observer {
         this.playerType = playerType;
         this.pitIdentifier = pitIdentifier;
         this.numberOfSeeds = initialNumberOfSeeds;
-        this.observerMap = new HashMap<>();
+        this.observerMap = new LinkedHashMap<>();
     }
 
     public abstract void initialMove();
@@ -58,7 +58,10 @@ public abstract class Pit implements Observable, Observer {
     public void notifyObservers(final Event event) {
         final EventType eventType = event.getEventType();
         final Set<Observer> observers = new LinkedHashSet<>();
-        observers.addAll(this.observerMap.get(eventType));
+        final Set<Observer> currentObservers = this.observerMap.get(eventType);
+        if(currentObservers != null) {
+            observers.addAll(currentObservers);
+        }
 
         for (final Observer observer : observers) {
             observer.update(this, event);
@@ -84,14 +87,6 @@ public abstract class Pit implements Observable, Observer {
 
     public void setNumberOfSeeds(int numberOfSeeds) {
         this.numberOfSeeds = numberOfSeeds;
-    }
-
-    protected void addOneSeed() {
-        this.numberOfSeeds++;
-    }
-
-    protected void removeAllSeed() {
-        this.numberOfSeeds = 0;
     }
 
     @Override

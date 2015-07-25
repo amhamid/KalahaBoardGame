@@ -41,5 +41,13 @@ public enum EventType {
     /**
      * Not empty pit
      */
-    NOT_EMPTY
+    NOT_EMPTY,
+    /**
+     * To indicate winner
+     */
+    WINS,
+    /**
+     * To indicate tie game
+     */
+    TIE_GAME
 }

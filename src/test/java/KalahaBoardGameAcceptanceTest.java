@@ -1,4 +1,5 @@
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.Map;
@@ -510,7 +511,7 @@ public class KalahaBoardGameAcceptanceTest {
     public void scenario10() {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
-        // make pit 1..5 empty
+        // make pit 7..12 empty
         kalahaBoard.getPit7().removeAllSeed();
         kalahaBoard.getPit8().removeAllSeed();
         kalahaBoard.getPit9().removeAllSeed();
@@ -524,6 +525,44 @@ public class KalahaBoardGameAcceptanceTest {
         pit12.initialMove();
 
         assertThat("Player 2 wins", kalahaBoard.getReferee().getWinner(), is(PlayerType.PLAYER_2));
+    }
+
+    /**
+     * Scenario 11:
+     * <p/>
+     * Simulate TIE game from player 1 perspective
+     */
+    @Test
+    public void scenario11() {
+        final KalahaBoard kalahaBoard = new KalahaBoard(6);
+
+        kalahaBoard.getKalahaPitPlayer1().setNumberOfSeeds(35);
+
+        final NormalPit pit6 = kalahaBoard.getPit6();
+        pit6.setNumberOfSeeds(1);
+
+        pit6.initialMove();
+
+        assertThat("TIE game", kalahaBoard.getReferee().getWinner(), is(nullValue()));
+    }
+
+    /**
+     * Scenario 12:
+     * <p/>
+     * Simulate TIE game from player 2 perspective
+     */
+    @Test
+    public void scenario12() {
+        final KalahaBoard kalahaBoard = new KalahaBoard(6);
+
+        kalahaBoard.getKalahaPitPlayer2().setNumberOfSeeds(35);
+
+        final NormalPit pit12 = kalahaBoard.getPit12();
+        pit12.setNumberOfSeeds(1);
+
+        pit12.initialMove();
+
+        assertThat("TIE game", kalahaBoard.getReferee().getWinner(), is(nullValue()));
     }
 
 }

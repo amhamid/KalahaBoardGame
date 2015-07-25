@@ -64,6 +64,10 @@ public class Referee implements Observable, Observer {
                 emptyPitIdentifiers.add(originPitIdentifier);
                 emptyPits.put(playerType, emptyPitIdentifiers);
 
+                // also check in the notEmptyPits map and if exists also remove it from there
+                notEmptyPitIdentifiers.remove(originPitIdentifier);
+                notEmptyPits.put(playerType, notEmptyPitIdentifiers);
+
                 if (emptyPits.get(PlayerType.PLAYER_1).size() == 6) { // all pits for player 1 is empty
                     // compare Kalaha pit from player 1 with the rest of player 2
                     final int totalSeedPlayer1 = pitsForPlayer1.get("KalahaPit 1").getNumberOfSeeds();
@@ -86,10 +90,6 @@ public class Referee implements Observable, Observer {
 
                     publishWinnerEvent(totalSeedPlayer1, totalSeedPlayer2);
                 }
-
-                // also check in the notEmptyPits map and if exists also remove it from there
-                notEmptyPitIdentifiers.remove(originPitIdentifier);
-                notEmptyPits.put(playerType, notEmptyPitIdentifiers);
                 break;
             case NOT_EMPTY:
                 // add to nonEmptyPits
@@ -176,4 +176,8 @@ public class Referee implements Observable, Observer {
         return winner;
     }
 
+    @Override
+    public String toString() {
+        return "Referee ";
+    }
 }

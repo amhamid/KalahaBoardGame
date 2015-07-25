@@ -1,17 +1,17 @@
 ```
-			 _         _       _                                  _ _ _     
-			| | ____ _| | __ _| |__   __ _    ___ ___  _ __ ___  | (_) |__  
-			| |/ / _` | |/ _` | '_ \ / _` |  / __/ _ \| '__/ _ \ | | | '_ \ 
-			|   < (_| | | (_| | | | | (_| | | (_| (_) | | |  __/ | | | |_) |
-			|_|\_\__,_|_|\__,_|_| |_|\__,_|  \___\___/|_|  \___| |_|_|_.__/ 
+	 _         _       _                                  _ _ _     
+	| | ____ _| | __ _| |__   __ _    ___ ___  _ __ ___  | (_) |__  
+	| |/ / _` | |/ _` | '_ \ / _` |  / __/ _ \| '__/ _ \ | | | '_ \ 
+	|   < (_| | | (_| | | | | (_| | | (_| (_) | | |  __/ | | | |_) |
+	|_|\_\__,_|_|\__,_|_| |_|\__,_|  \___\___/|_|  \___| |_|_|_.__/ 
 
-     -------------------------------------------------------------------------
-  	 |              Pit12   Pit11   Pit10   Pit9    Pit8    Pit7             |
-     |                                                                       |
-  	 | KalahaPit2                                                 KalahaPit1 |
-     |                                                                       |
-     |              Pit1    Pit2    Pit3    Pit4    Pit5    Pit6             |
-  	 -------------------------------------------------------------------------
+	-------------------------------------------------------------------------
+	|              Pit12   Pit11   Pit10   Pit9    Pit8    Pit7             |
+	|                                                                       |
+  	| KalahaPit2                                                 KalahaPit1 |
+	|                                                                       |
+	|              Pit1    Pit2    Pit3    Pit4    Pit5    Pit6             |
+	-------------------------------------------------------------------------
 
 ```
 
@@ -26,4 +26,4 @@ The benefits about this event-driven approach are:
   
 I tried my best to make sure that source code is well-documented and provide some Kalaha board sketches to make it easy to understand. Acceptance tests should cover the game rules and play scenarios.
 
-Please look at my other repository for building Web UI that uses this library.
+Please look at my [KalahaBoardGame-web](https://github.com/amhamid/KalahaBoardGame-web) repository for Web UI that uses this Kalaha core library.

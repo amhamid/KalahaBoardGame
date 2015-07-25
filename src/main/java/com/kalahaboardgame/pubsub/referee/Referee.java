@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import com.kalahaboardgame.event.Event;
@@ -15,7 +16,7 @@ import com.kalahaboardgame.pubsub.Observer;
 
 /**
  * Referee to decide player's turn and who wins.
- * <p/>
+ * <p>
  * Created by amhamid on 7/23/15.
  */
 public class Referee implements Observable, Observer {
@@ -33,12 +34,12 @@ public class Referee implements Observable, Observer {
         this.pitsForPlayer2 = pitsForPlayer2;
 
         emptyPits = new LinkedHashMap<>();
-        emptyPits.put(PlayerType.PLAYER_1, new LinkedHashSet<String>());
-        emptyPits.put(PlayerType.PLAYER_2, new LinkedHashSet<String>());
+        emptyPits.put(PlayerType.PLAYER_1, new LinkedHashSet<>());
+        emptyPits.put(PlayerType.PLAYER_2, new LinkedHashSet<>());
 
         notEmptyPits = new LinkedHashMap<>();
-        notEmptyPits.put(PlayerType.PLAYER_1, new LinkedHashSet<String>());
-        notEmptyPits.put(PlayerType.PLAYER_2, new LinkedHashSet<String>());
+        notEmptyPits.put(PlayerType.PLAYER_1, new LinkedHashSet<>());
+        notEmptyPits.put(PlayerType.PLAYER_2, new LinkedHashSet<>());
 
         observerMap = new LinkedHashMap<>();
     }
@@ -72,20 +73,20 @@ public class Referee implements Observable, Observer {
                     // compare Kalaha pit from player 1 with the rest of player 2
                     final int totalSeedPlayer1 = pitsForPlayer1.get("KalahaPit 1").getNumberOfSeeds();
 
-                    int totalSeedPlayer2 = 0;
-                    for (final Pit pit : pitsForPlayer2.values()) {
-                        totalSeedPlayer2 += pit.getNumberOfSeeds();
-                    }
+                    int totalSeedPlayer2 =
+                            pitsForPlayer2.values().stream()
+                                    .mapToInt(Pit::getNumberOfSeeds)
+                                    .reduce(0, (total, seeds) -> total + seeds);
 
                     publishWinnerEvent(totalSeedPlayer1, totalSeedPlayer2);
                 } else if (emptyPits.get(PlayerType.PLAYER_2).size() == 6) { // all pits for player 2 is empty
                     // compare Kalaha pit from player 2 with the rest of player 1
                     final int totalSeedPlayer2 = pitsForPlayer2.get("KalahaPit 2").getNumberOfSeeds();
 
-                    int totalSeedPlayer1 = 0;
-                    for (final Pit pit : pitsForPlayer1.values()) {
-                        totalSeedPlayer1 += pit.getNumberOfSeeds();
-                    }
+                    int totalSeedPlayer1 =
+                            pitsForPlayer1.values().stream()
+                                    .mapToInt(Pit::getNumberOfSeeds)
+                                    .reduce(0, (total, seeds) -> total + seeds);
 
                     publishWinnerEvent(totalSeedPlayer1, totalSeedPlayer2);
                 }
@@ -124,7 +125,7 @@ public class Referee implements Observable, Observer {
     public void addObserver(final EventType eventType, final Observer observer) {
         final Set<Observer> observers = new LinkedHashSet<>();
         final Set<Observer> currentObservers = this.observerMap.get(eventType);
-        if (currentObservers != null) {
+        if (Objects.nonNull(currentObservers)) {
             observers.addAll(currentObservers);
         }
         observers.add(observer);
@@ -134,9 +135,7 @@ public class Referee implements Observable, Observer {
 
     @Override
     public void addObserver(final Set<EventType> eventTypes, final Observer observer) {
-        for (final EventType eventType : eventTypes) {
-            addObserver(eventType, observer);
-        }
+        eventTypes.stream().forEach(eventType -> addObserver(eventType, observer));
     }
 
     @Override
@@ -144,13 +143,11 @@ public class Referee implements Observable, Observer {
         final EventType eventType = event.getEventType();
         final Set<Observer> observers = new LinkedHashSet<>();
         final Set<Observer> currentObservers = this.observerMap.get(eventType);
-        if (currentObservers != null) {
+        if (Objects.nonNull(currentObservers)) {
             observers.addAll(currentObservers);
         }
 
-        for (final Observer observer : observers) {
-            observer.update(this, event);
-        }
+        observers.stream().forEach(observer -> observer.update(this, event));
     }
 
     private void publishEvent(final PlayerType playerType, final EventType eventType, final int numberOfSeeds) {

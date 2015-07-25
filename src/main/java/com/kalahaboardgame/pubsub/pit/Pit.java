@@ -3,6 +3,7 @@ package com.kalahaboardgame.pubsub.pit;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import com.kalahaboardgame.event.Event;
@@ -15,7 +16,7 @@ import com.kalahaboardgame.pubsub.Observer;
  * Interface for Pit.
  * A Pit is both Observable and Observer. The idea is that A pit should be able to generate events and process events.
  * A pit should be agnostic to other pit's location in the board. Only the Board should know the configuration for the pits location.
- * <p/>
+ * <p>
  * Created by amhamid on 7/23/15.
  */
 public abstract class Pit implements Observable, Observer {
@@ -33,13 +34,14 @@ public abstract class Pit implements Observable, Observer {
     }
 
     public abstract void initialMove();
+
     public abstract void publishNotEmptyEvent();
 
     @Override
     public void addObserver(final EventType eventType, final Observer observer) {
         final Set<Observer> observers = new LinkedHashSet<>();
         final Set<Observer> currentObservers = this.observerMap.get(eventType);
-        if(currentObservers != null) {
+        if (Objects.nonNull(currentObservers)) {
             observers.addAll(currentObservers);
         }
         observers.add(observer);
@@ -49,9 +51,7 @@ public abstract class Pit implements Observable, Observer {
 
     @Override
     public void addObserver(final Set<EventType> eventTypes, final Observer observer) {
-        for (final EventType eventType : eventTypes) {
-            addObserver(eventType, observer);
-        }
+        eventTypes.stream().forEach(eventType -> addObserver(eventType, observer));
     }
 
     @Override
@@ -59,13 +59,11 @@ public abstract class Pit implements Observable, Observer {
         final EventType eventType = event.getEventType();
         final Set<Observer> observers = new LinkedHashSet<>();
         final Set<Observer> currentObservers = this.observerMap.get(eventType);
-        if(currentObservers != null) {
+        if (Objects.nonNull(currentObservers)) {
             observers.addAll(currentObservers);
         }
 
-        for (final Observer observer : observers) {
-            observer.update(this, event);
-        }
+        observers.stream().forEach(observer -> observer.update(this, event));
     }
 
     public PlayerType getPlayerType() {

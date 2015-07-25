@@ -1,23 +1,23 @@
 package com.kalahaboardgame.board;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.google.common.collect.Lists;
 import com.kalahaboardgame.event.EventType;
+import com.kalahaboardgame.player.PlayerType;
 import com.kalahaboardgame.pubsub.logger.ReplayableEventLogger;
 import com.kalahaboardgame.pubsub.pit.Pit;
 import com.kalahaboardgame.pubsub.pit.impl.KalahaPit;
 import com.kalahaboardgame.pubsub.pit.impl.NormalPit;
-import com.kalahaboardgame.player.PlayerType;
 import com.kalahaboardgame.pubsub.referee.Referee;
 
 /**
  * Kalaha Board.
  * This object configures Kalaha board and initialize pits and connect them together thru publisher/subscriber mechanism.
- * <p/>
+ * <p>
  * <pre>
  *
  * The board configuration looks like the following:
@@ -34,7 +34,7 @@ import com.kalahaboardgame.pubsub.referee.Referee;
  *     Player 2 owns:  Pit 7 .. 12  +  KalahaPit2
  *
  * </pre>
- * <p/>
+ * <p>
  * Created by amhamid on 7/23/15.
  */
 public class KalahaBoard {
@@ -111,7 +111,7 @@ public class KalahaBoard {
 
     /**
      * Register neighbors.
-     * <p/>
+     * <p>
      * <pre>
      *
      *     -------------------------------------------------------------------------
@@ -155,7 +155,7 @@ public class KalahaBoard {
 
     /**
      * Register opposites.
-     * <p/>
+     * <p>
      * <pre>
      *
      * Example of one registration:
@@ -217,9 +217,9 @@ public class KalahaBoard {
         eventTypes.add(EventType.NOT_EMPTY);
         eventTypes.add(EventType.CHANGE_TURN);
 
-        for (final Pit pit : allPits.values()) {
-            pit.addObserver(eventTypes, referee);
-        }
+        allPits.values().stream().forEach(
+                pit -> pit.addObserver(eventTypes, referee)
+        );
     }
 
     /**
@@ -228,20 +228,16 @@ public class KalahaBoard {
      */
     private void registerReplayableEventLogger() {
         // interested in all event types
-        final Set<EventType> eventTypes = new LinkedHashSet<>(Lists.newArrayList(EventType.values()));
-
-        for (final Pit pit : allPits.values()) {
-            pit.addObserver(eventTypes, replayableEventLogger);
-        }
-
+        final Set<EventType> eventTypes = new LinkedHashSet<>(Arrays.asList(EventType.values()));
+        allPits.values().stream().forEach(
+                pit -> pit.addObserver(eventTypes, replayableEventLogger)
+        );
         referee.addObserver(eventTypes, replayableEventLogger);
     }
 
     // This is to let observers know that all pits has been filled with seeds
     private void publishNotEmptyEventForAllPits() {
-        for (final Pit pit : allPits.values()) {
-            pit.publishNotEmptyEvent();
-        }
+        allPits.values().forEach(Pit::publishNotEmptyEvent);
     }
 
     // get all pits for player 1

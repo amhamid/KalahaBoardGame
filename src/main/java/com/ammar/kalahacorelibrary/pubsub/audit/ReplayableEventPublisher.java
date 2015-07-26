@@ -28,6 +28,7 @@ public class ReplayableEventPublisher implements Observable, Observer {
 
     public void update(final Observable observable, final Event event) {
         logger.info("Publisher: " + observable + " - " + event);
+        publishEvent(event);
     }
 
     @Override
@@ -57,6 +58,10 @@ public class ReplayableEventPublisher implements Observable, Observer {
         }
 
         observers.stream().forEach(observer -> observer.update(this, event));
+    }
+
+    private void publishEvent(final Event event) {
+        notifyObservers(event);
     }
 
 }

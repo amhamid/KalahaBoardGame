@@ -187,7 +187,7 @@ public class KalahaCoreLibraryAcceptanceTest {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         final NormalPit pit1 = kalahaBoard.getPit1();
-        pit1.setNumberOfSeeds(14);
+        pit1.setNumberOfSeedsForTestPurposeOnly(14);
         pit1.initialMove();
 
         // assert number of seeds
@@ -260,7 +260,7 @@ public class KalahaCoreLibraryAcceptanceTest {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         final NormalPit pit7 = kalahaBoard.getPit7();
-        pit7.setNumberOfSeeds(14);
+        pit7.setNumberOfSeedsForTestPurposeOnly(14);
         pit7.initialMove();
 
         // assert number of seeds
@@ -332,18 +332,18 @@ public class KalahaCoreLibraryAcceptanceTest {
 
         // set pit 3 to have 1 seed
         final NormalPit pit3 = kalahaBoard.getPit3();
-        pit3.setNumberOfSeeds(1);
+        pit3.setNumberOfSeedsForTestPurposeOnly(1);
 
         // set pit 4 empty
         final NormalPit pit4 = kalahaBoard.getPit4();
-        pit4.setNumberOfSeeds(0);
+        pit4.setNumberOfSeedsForTestPurposeOnly(0);
 
         // set pit 9 (the opposite of pit 4) to have 5 seeds
         final NormalPit pit9 = kalahaBoard.getPit9();
-        pit9.setNumberOfSeeds(5);
+        pit9.setNumberOfSeedsForTestPurposeOnly(5);
 
         final KalahaPit kalahaPit = kalahaBoard.getKalahaPitPlayer1();
-        kalahaPit.setNumberOfSeeds(10);
+        kalahaPit.setNumberOfSeedsForTestPurposeOnly(10);
 
         // move 1 seed from pit 3 to pit 4
         pit3.initialMove();
@@ -376,18 +376,18 @@ public class KalahaCoreLibraryAcceptanceTest {
 
         // set pit 11 to have 1 seed
         final NormalPit pit11 = kalahaBoard.getPit11();
-        pit11.setNumberOfSeeds(1);
+        pit11.setNumberOfSeedsForTestPurposeOnly(1);
 
         // set pit 12 empty
         final NormalPit pit12 = kalahaBoard.getPit12();
-        pit12.setNumberOfSeeds(0);
+        pit12.setNumberOfSeedsForTestPurposeOnly(0);
 
         // set pit 1 (the opposite of pit 12) to have 8 seeds
         final NormalPit pit1 = kalahaBoard.getPit1();
-        pit1.setNumberOfSeeds(8);
+        pit1.setNumberOfSeedsForTestPurposeOnly(8);
 
         final KalahaPit kalahaPit = kalahaBoard.getKalahaPitPlayer2();
-        kalahaPit.setNumberOfSeeds(10);
+        kalahaPit.setNumberOfSeedsForTestPurposeOnly(10);
 
         // move 1 seed from pit 11 to pit 12
         pit11.initialMove();
@@ -418,18 +418,18 @@ public class KalahaCoreLibraryAcceptanceTest {
 
         // set pit 3 to have 1 seed
         final NormalPit pit3 = kalahaBoard.getPit3();
-        pit3.setNumberOfSeeds(1);
+        pit3.setNumberOfSeedsForTestPurposeOnly(1);
 
         // set pit 4 empty
         final NormalPit pit4 = kalahaBoard.getPit4();
-        pit4.setNumberOfSeeds(0);
+        pit4.setNumberOfSeedsForTestPurposeOnly(0);
 
         // set pit 9 (the opposite of pit 4) to have 5 seeds
         final NormalPit pit9 = kalahaBoard.getPit9();
-        pit9.setNumberOfSeeds(0);
+        pit9.setNumberOfSeedsForTestPurposeOnly(0);
 
         final KalahaPit kalahaPit = kalahaBoard.getKalahaPitPlayer1();
-        kalahaPit.setNumberOfSeeds(10);
+        kalahaPit.setNumberOfSeedsForTestPurposeOnly(10);
 
         // move 1 seed from pit 3 to pit 4
         pit3.initialMove();
@@ -462,18 +462,18 @@ public class KalahaCoreLibraryAcceptanceTest {
 
         // set pit 11 to have 1 seed
         final NormalPit pit11 = kalahaBoard.getPit11();
-        pit11.setNumberOfSeeds(1);
+        pit11.setNumberOfSeedsForTestPurposeOnly(1);
 
         // set pit 12 empty
         final NormalPit pit12 = kalahaBoard.getPit12();
-        pit12.setNumberOfSeeds(0);
+        pit12.setNumberOfSeedsForTestPurposeOnly(0);
 
         // set pit 1 (the opposite of pit 12) to have 8 seeds
         final NormalPit pit1 = kalahaBoard.getPit1();
-        pit1.setNumberOfSeeds(0);
+        pit1.setNumberOfSeedsForTestPurposeOnly(0);
 
         final KalahaPit kalahaPit = kalahaBoard.getKalahaPitPlayer2();
-        kalahaPit.setNumberOfSeeds(10);
+        kalahaPit.setNumberOfSeedsForTestPurposeOnly(10);
 
         // move 1 seed from pit 11 to pit 12
         pit11.initialMove();
@@ -502,15 +502,15 @@ public class KalahaCoreLibraryAcceptanceTest {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         // make pit 1..5 empty
-        kalahaBoard.getPit1().removeAllSeed();
-        kalahaBoard.getPit2().removeAllSeed();
-        kalahaBoard.getPit3().removeAllSeed();
-        kalahaBoard.getPit4().removeAllSeed();
-        kalahaBoard.getPit5().removeAllSeed();
-        kalahaBoard.getKalahaPitPlayer1().setNumberOfSeeds(50);
+        kalahaBoard.getPit1().removeAllSeedForTestPurposeOnly();
+        kalahaBoard.getPit2().removeAllSeedForTestPurposeOnly();
+        kalahaBoard.getPit3().removeAllSeedForTestPurposeOnly();
+        kalahaBoard.getPit4().removeAllSeedForTestPurposeOnly();
+        kalahaBoard.getPit5().removeAllSeedForTestPurposeOnly();
+        kalahaBoard.getKalahaPitPlayer1().setNumberOfSeedsForTestPurposeOnly(50);
 
         final NormalPit pit6 = kalahaBoard.getPit6();
-        pit6.setNumberOfSeeds(1);
+        pit6.setNumberOfSeedsForTestPurposeOnly(1);
 
         pit6.initialMove();
 
@@ -533,15 +533,15 @@ public class KalahaCoreLibraryAcceptanceTest {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         // make pit 7..12 empty
-        kalahaBoard.getPit7().removeAllSeed();
-        kalahaBoard.getPit8().removeAllSeed();
-        kalahaBoard.getPit9().removeAllSeed();
-        kalahaBoard.getPit10().removeAllSeed();
-        kalahaBoard.getPit11().removeAllSeed();
-        kalahaBoard.getKalahaPitPlayer2().setNumberOfSeeds(50);
+        kalahaBoard.getPit7().removeAllSeedForTestPurposeOnly();
+        kalahaBoard.getPit8().removeAllSeedForTestPurposeOnly();
+        kalahaBoard.getPit9().removeAllSeedForTestPurposeOnly();
+        kalahaBoard.getPit10().removeAllSeedForTestPurposeOnly();
+        kalahaBoard.getPit11().removeAllSeedForTestPurposeOnly();
+        kalahaBoard.getKalahaPitPlayer2().setNumberOfSeedsForTestPurposeOnly(50);
 
         final NormalPit pit12 = kalahaBoard.getPit12();
-        pit12.setNumberOfSeeds(1);
+        pit12.setNumberOfSeedsForTestPurposeOnly(1);
 
         pit12.initialMove();
 
@@ -559,10 +559,10 @@ public class KalahaCoreLibraryAcceptanceTest {
 
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
-        kalahaBoard.getKalahaPitPlayer1().setNumberOfSeeds(35);
+        kalahaBoard.getKalahaPitPlayer1().setNumberOfSeedsForTestPurposeOnly(35);
 
         final NormalPit pit6 = kalahaBoard.getPit6();
-        pit6.setNumberOfSeeds(1);
+        pit6.setNumberOfSeedsForTestPurposeOnly(1);
 
         pit6.initialMove();
 
@@ -580,10 +580,10 @@ public class KalahaCoreLibraryAcceptanceTest {
 
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
-        kalahaBoard.getKalahaPitPlayer2().setNumberOfSeeds(35);
+        kalahaBoard.getKalahaPitPlayer2().setNumberOfSeedsForTestPurposeOnly(35);
 
         final NormalPit pit12 = kalahaBoard.getPit12();
-        pit12.setNumberOfSeeds(1);
+        pit12.setNumberOfSeedsForTestPurposeOnly(1);
 
         pit12.initialMove();
 
@@ -606,11 +606,11 @@ public class KalahaCoreLibraryAcceptanceTest {
 
         // set pit 6 to have 2 seed
         final NormalPit pit6 = kalahaBoard.getPit6();
-        pit6.setNumberOfSeeds(2);
+        pit6.setNumberOfSeedsForTestPurposeOnly(2);
 
         // set pit 7 empty
         final NormalPit pit7 = kalahaBoard.getPit7();
-        pit7.setNumberOfSeeds(0);
+        pit7.setNumberOfSeedsForTestPurposeOnly(0);
 
         // move 2 seed from pit 6 to pit 7
         pit6.initialMove();
@@ -639,11 +639,11 @@ public class KalahaCoreLibraryAcceptanceTest {
 
         // set pit 12 to have 2 seed
         final NormalPit pit12 = kalahaBoard.getPit12();
-        pit12.setNumberOfSeeds(2);
+        pit12.setNumberOfSeedsForTestPurposeOnly(2);
 
         // set pit 1 empty
         final NormalPit pit1 = kalahaBoard.getPit1();
-        pit1.setNumberOfSeeds(0);
+        pit1.setNumberOfSeedsForTestPurposeOnly(0);
 
         // move 2 seed from pit 12 to pit 1
         pit12.initialMove();

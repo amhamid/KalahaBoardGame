@@ -1,6 +1,7 @@
 package com.ammar.kalahacorelibrary.board;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -8,11 +9,11 @@ import java.util.Set;
 
 import com.ammar.kalahacorelibrary.event.EventType;
 import com.ammar.kalahacorelibrary.player.PlayerType;
+import com.ammar.kalahacorelibrary.pubsub.logger.ReplayableEventLogger;
 import com.ammar.kalahacorelibrary.pubsub.pit.Pit;
 import com.ammar.kalahacorelibrary.pubsub.pit.impl.KalahaPit;
-import com.ammar.kalahacorelibrary.pubsub.referee.Referee;
-import com.ammar.kalahacorelibrary.pubsub.logger.ReplayableEventLogger;
 import com.ammar.kalahacorelibrary.pubsub.pit.impl.NormalPit;
+import com.ammar.kalahacorelibrary.pubsub.referee.Referee;
 
 /**
  * Kalaha Board.
@@ -326,5 +327,9 @@ public class KalahaBoard {
 
     public Referee getReferee() {
         return referee;
+    }
+
+    public Map<String, Pit> getAllPits() {
+        return Collections.unmodifiableMap(allPits);
     }
 }

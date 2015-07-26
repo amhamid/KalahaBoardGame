@@ -83,8 +83,16 @@ public abstract class Pit implements Observable, Observer {
         notifyObservers(event);
     }
 
-    public void setNumberOfSeeds(int numberOfSeeds) {
+    protected void setNumberOfSeeds(int numberOfSeeds) {
         this.numberOfSeeds = numberOfSeeds;
+    }
+
+    protected void addOneSeed() {
+        setNumberOfSeeds(getNumberOfSeeds() + 1);
+    }
+
+    protected void removeAllSeed() {
+        setNumberOfSeeds(0);
     }
 
     @Override

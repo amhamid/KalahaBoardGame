@@ -71,12 +71,14 @@ public class KalahaPit extends Pit {
         }
     }
 
-    public void setNumberOfSeeds(int numberOfSeeds) {
+    // for testing purpose only !!
+    // set number of seeds in Pit class has protected visibility
+    public void setNumberOfSeedsForTestPurposeOnly(int numberOfSeeds) {
         super.setNumberOfSeeds(numberOfSeeds);
     }
 
-    public void addOneSeed() {
-        setNumberOfSeeds(getNumberOfSeeds() + 1);
+    // for testing purpose only !!
+    public void removeAllSeedForTestPurposeOnly() {
+        setNumberOfSeedsForTestPurposeOnly(0);
     }
-
 }

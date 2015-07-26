@@ -25,6 +25,7 @@ public class NormalPit extends Pit {
 
         // remove all seeds
         removeAllSeed();
+        publishEvent(getPlayerType(), EventType.EMPTY, getNumberOfSeeds());
 
         // publish event initial move
         publishEvent(getPlayerType(), EventType.INITIAL_MOVE, initialNumberOfSeeds);
@@ -47,6 +48,8 @@ public class NormalPit extends Pit {
                 } else {
                     // propagate event with original event with number of seeds - 1
                     addOneSeed();
+                    publishEvent(event.getPlayerType(), EventType.NOT_EMPTY, getNumberOfSeeds());
+
                     final int numberOfSeedsInTheEventThatNeedToBePropagated = event.getNumberOfSeeds() - 1;
                     if (numberOfSeedsInTheEventThatNeedToBePropagated == 1) {
                         publishEvent(event.getPlayerType(), EventType.LAST_MOVE, numberOfSeedsInTheEventThatNeedToBePropagated);
@@ -61,6 +64,7 @@ public class NormalPit extends Pit {
                     publishEvent(event.getPlayerType(), EventType.CAPTURE_SEEDS, 1);
                 } else {
                     addOneSeed();
+                    publishEvent(event.getPlayerType(), EventType.NOT_EMPTY, getNumberOfSeeds());
                 }
 
                 // for the last move in normal pit, switch player turn (player may only play again, when the last seed is in his own Kalaha pit)
@@ -69,6 +73,7 @@ public class NormalPit extends Pit {
             case CAPTURE_SEEDS:
                 final int numberOfSeeds = getNumberOfSeeds();
                 removeAllSeed();
+                publishEvent(getPlayerType(), EventType.EMPTY, getNumberOfSeeds());
                 publishEvent(event.getPlayerType(), EventType.STORE_SEEDS, numberOfSeeds + event.getNumberOfSeeds());
                 break;
             default:
@@ -82,7 +87,9 @@ public class NormalPit extends Pit {
         return getNumberOfSeeds() == 0 && event.getNumberOfSeeds() == 1 && getPlayerType() == event.getPlayerType();
     }
 
-    public void setNumberOfSeeds(int numberOfSeeds) {
+    // for testing purpose only !!
+    // set number of seeds in Pit class has protected visibility
+    public void setNumberOfSeedsForTestPurposeOnly(int numberOfSeeds) {
         super.setNumberOfSeeds(numberOfSeeds);
         if(getNumberOfSeeds() == 0) {
             publishEvent(getPlayerType(), EventType.EMPTY, getNumberOfSeeds());
@@ -91,12 +98,8 @@ public class NormalPit extends Pit {
         }
     }
 
-    public void addOneSeed() {
-        setNumberOfSeeds(getNumberOfSeeds() + 1);
+    // for testing purpose only !!
+    public void removeAllSeedForTestPurposeOnly() {
+        setNumberOfSeedsForTestPurposeOnly(0);
     }
-
-    public void removeAllSeed() {
-        setNumberOfSeeds(0);
-    }
-
 }

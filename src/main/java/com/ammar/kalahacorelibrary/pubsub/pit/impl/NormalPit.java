@@ -23,12 +23,16 @@ public class NormalPit extends Pit {
         // get number of seeds
         final int initialNumberOfSeeds = getNumberOfSeeds();
 
-        // remove all seeds
-        removeAllSeed();
-        publishEvent(getPlayerType(), EventType.EMPTY, getNumberOfSeeds());
+        if(initialNumberOfSeeds == 0) {
+            publishEvent(getPlayerType(), EventType.EMPTY, getNumberOfSeeds());
+        } else {
+            // remove all seeds
+            removeAllSeed();
+            publishEvent(getPlayerType(), EventType.EMPTY, getNumberOfSeeds());
 
-        // publish event initial move
-        publishEvent(getPlayerType(), EventType.INITIAL_MOVE, initialNumberOfSeeds);
+            // publish event initial move
+            publishEvent(getPlayerType(), EventType.INITIAL_MOVE, initialNumberOfSeeds);
+        }
     }
 
     @Override

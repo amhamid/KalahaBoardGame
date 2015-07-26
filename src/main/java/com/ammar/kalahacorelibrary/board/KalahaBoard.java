@@ -9,7 +9,7 @@ import java.util.Set;
 
 import com.ammar.kalahacorelibrary.event.EventType;
 import com.ammar.kalahacorelibrary.player.PlayerType;
-import com.ammar.kalahacorelibrary.pubsub.logger.ReplayableEventLogger;
+import com.ammar.kalahacorelibrary.pubsub.audit.ReplayableEventPublisher;
 import com.ammar.kalahacorelibrary.pubsub.pit.Pit;
 import com.ammar.kalahacorelibrary.pubsub.pit.impl.KalahaPit;
 import com.ammar.kalahacorelibrary.pubsub.pit.impl.NormalPit;
@@ -56,7 +56,7 @@ public class KalahaBoard {
     private final KalahaPit kalahaPitPlayer2;
 
     private final Referee referee;
-    private final ReplayableEventLogger replayableEventLogger;
+    private final ReplayableEventPublisher replayableEventPublisher;
     private final Map<String, Pit> allPits;
 
 
@@ -92,7 +92,7 @@ public class KalahaBoard {
 
         // initialize observers
         referee = new Referee(pitsForPlayer1, pitsForPlayer2);
-        replayableEventLogger = new ReplayableEventLogger();
+        replayableEventPublisher = new ReplayableEventPublisher();
 
         // configure board
         this.configureBoard();
@@ -100,7 +100,7 @@ public class KalahaBoard {
 
     private void configureBoard() {
         // this is registered first to make sure that we can track events as they inserted.
-        registerReplayableEventLogger();
+        registerReplayableEventPublisher();
 
         registerNeighbors();
         registerOpposites();
@@ -224,16 +224,16 @@ public class KalahaBoard {
     }
 
     /**
-     * Register logger (for event replay-ability) to all pits.
+     * Register replayable event publisher (for event replay-ability) to all pits and referee.
      * This is to make it possible to recreate the whole game situation from events.
      */
-    private void registerReplayableEventLogger() {
+    private void registerReplayableEventPublisher() {
         // interested in all event types
         final Set<EventType> eventTypes = new LinkedHashSet<>(Arrays.asList(EventType.values()));
         allPits.values().stream().forEach(
-                pit -> pit.addObserver(eventTypes, replayableEventLogger)
+                pit -> pit.addObserver(eventTypes, replayableEventPublisher)
         );
-        referee.addObserver(eventTypes, replayableEventLogger);
+        referee.addObserver(eventTypes, replayableEventPublisher);
     }
 
     // This is to let observers know that all pits has been filled with seeds
@@ -331,5 +331,9 @@ public class KalahaBoard {
 
     public Map<String, Pit> getAllPits() {
         return Collections.unmodifiableMap(allPits);
+    }
+
+    public ReplayableEventPublisher getReplayableEventPublisher() {
+        return replayableEventPublisher;
     }
 }

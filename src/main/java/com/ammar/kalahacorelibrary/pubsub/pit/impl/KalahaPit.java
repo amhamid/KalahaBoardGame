@@ -48,6 +48,8 @@ public class KalahaPit extends Pit {
                     publishEvent(event.getPlayerType(), EventType.LAST_MOVE, numberOfSeedsInTheEventThatNeedToBePropagated);
                 } else if (numberOfSeedsInTheEventThatNeedToBePropagated > 1) {
                     publishEvent(event.getPlayerType(), EventType.MOVE, numberOfSeedsInTheEventThatNeedToBePropagated);
+                } else {
+                    publishEvent(event.getPlayerType(), EventType.CHANGE_TURN, event.getNumberOfSeeds());
                 }
                 break;
             case LAST_MOVE:

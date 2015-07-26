@@ -68,28 +68,6 @@ public class Referee implements Observable, Observer {
                 // also check in the notEmptyPits map and if exists also remove it from there
                 notEmptyPitIdentifiers.remove(originPitIdentifier);
                 notEmptyPits.put(playerType, notEmptyPitIdentifiers);
-
-                if (emptyPits.get(PlayerType.PLAYER_1).size() == 6) { // all pits for player 1 is empty
-                    // compare Kalaha pit from player 1 with the rest of player 2
-                    final int totalSeedPlayer1 = pitsForPlayer1.get("KalahaPit 1").getNumberOfSeeds();
-
-                    int totalSeedPlayer2 =
-                            pitsForPlayer2.values().stream()
-                                    .mapToInt(Pit::getNumberOfSeeds)
-                                    .reduce(0, (total, seeds) -> total + seeds);
-
-                    publishWinnerEvent(totalSeedPlayer1, totalSeedPlayer2);
-                } else if (emptyPits.get(PlayerType.PLAYER_2).size() == 6) { // all pits for player 2 is empty
-                    // compare Kalaha pit from player 2 with the rest of player 1
-                    final int totalSeedPlayer2 = pitsForPlayer2.get("KalahaPit 2").getNumberOfSeeds();
-
-                    int totalSeedPlayer1 =
-                            pitsForPlayer1.values().stream()
-                                    .mapToInt(Pit::getNumberOfSeeds)
-                                    .reduce(0, (total, seeds) -> total + seeds);
-
-                    publishWinnerEvent(totalSeedPlayer1, totalSeedPlayer2);
-                }
                 break;
             case NOT_EMPTY:
                 // add to nonEmptyPits
@@ -101,10 +79,35 @@ public class Referee implements Observable, Observer {
                 emptyPits.put(playerType, emptyPitIdentifiers);
                 break;
             case CHANGE_TURN:
+                decideTheWinnerIfPossible();
                 this.currentPlayerTurn = event.getPlayerType();
                 break;
             default:
                 break;
+        }
+    }
+
+    private void decideTheWinnerIfPossible() {
+        if (emptyPits.get(PlayerType.PLAYER_1).size() == 6) { // all pits for player 1 is empty
+            // compare Kalaha pit from player 1 with the rest of player 2
+            final int totalSeedPlayer1 = pitsForPlayer1.get("KalahaPit 1").getNumberOfSeeds();
+
+            int totalSeedPlayer2 =
+                    pitsForPlayer2.values().stream()
+                            .mapToInt(Pit::getNumberOfSeeds)
+                            .reduce(0, (total, seeds) -> total + seeds);
+
+            publishWinnerEvent(totalSeedPlayer1, totalSeedPlayer2);
+        } else if (emptyPits.get(PlayerType.PLAYER_2).size() == 6) { // all pits for player 2 is empty
+            // compare Kalaha pit from player 2 with the rest of player 1
+            final int totalSeedPlayer2 = pitsForPlayer2.get("KalahaPit 2").getNumberOfSeeds();
+
+            int totalSeedPlayer1 =
+                    pitsForPlayer1.values().stream()
+                            .mapToInt(Pit::getNumberOfSeeds)
+                            .reduce(0, (total, seeds) -> total + seeds);
+
+            publishWinnerEvent(totalSeedPlayer1, totalSeedPlayer2);
         }
     }
 

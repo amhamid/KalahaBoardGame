@@ -59,6 +59,8 @@ public class NormalPit extends Pit {
                         publishEvent(event.getPlayerType(), EventType.LAST_MOVE, numberOfSeedsInTheEventThatNeedToBePropagated);
                     } else if (numberOfSeedsInTheEventThatNeedToBePropagated > 1) {
                         publishEvent(event.getPlayerType(), EventType.MOVE, numberOfSeedsInTheEventThatNeedToBePropagated);
+                    } else {
+                        publishEvent(event.getPlayerType().changeTurn(), EventType.CHANGE_TURN, getNumberOfSeeds());
                     }
                 }
                 break;

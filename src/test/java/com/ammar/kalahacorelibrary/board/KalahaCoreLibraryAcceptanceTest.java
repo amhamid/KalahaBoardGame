@@ -656,4 +656,26 @@ public class KalahaCoreLibraryAcceptanceTest {
         assertThat("Current player should switch to player 1", currentPlayerTurn, is(PlayerType.PLAYER_1));
     }
 
+    /**
+     * When Player 1 moves 1 seed from pit 1 and end-up in pit 2 then CHANGE_TURN should be published
+     */
+    @Test
+    public void scenario15() {
+        System.out.printf("\nStart test scenario 15\n");
+
+        final KalahaBoard kalahaBoard = new KalahaBoard(6);
+
+        // set pit 1 to have 1 seed
+        final NormalPit pit1 = kalahaBoard.getPit1();
+        pit1.setNumberOfSeedsForTestPurposeOnly(1);
+
+        // move 1 seed from pit 1 to pit 2
+        pit1.initialMove();
+
+        assertThat("Pit 1 should have 0 seeds", kalahaBoard.getPit1().getNumberOfSeeds(), is(0));
+
+        final PlayerType currentPlayerTurn = kalahaBoard.getReferee().getCurrentPlayerTurn();
+        assertThat("Current player should switch to player 2", currentPlayerTurn, is(PlayerType.PLAYER_2));
+    }
+
 }

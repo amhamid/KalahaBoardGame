@@ -24,6 +24,9 @@ The benefits about this event-driven approach are:
   - Since all actions result in events, we could re-create the whole game situation from the emitted events.
   - This approach makes it easy to provide UI and UI components only need to register them self for the events and react on those notifications.
   
+Here is a class structure diagram from version 1.3:
+![alt class diagram](Class-Structure-version-1.3.png)
+
 I tried my best to make sure that source code is well-documented and provide some Kalaha board sketches to make it easy to understand. Acceptance tests should cover the game rules and play scenarios.
 
 Please look at my [KalahaBoardGame-web](https://github.com/amhamid/KalahaBoardGame-web) repository for Web UI that uses this Kalaha core library.

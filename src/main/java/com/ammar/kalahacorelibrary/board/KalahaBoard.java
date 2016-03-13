@@ -228,4 +228,12 @@ public class KalahaBoard {
         return referee;
     }
 
+    public Map<String, Pit> getAllPits() {
+        return Collections.unmodifiableMap(allPits);
+    }
+
+    public ReplayableEventPublisher getReplayableEventPublisher() {
+        return replayableEventPublisher;
+    }
+
 }

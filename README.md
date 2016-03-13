@@ -21,11 +21,11 @@ The benefits about this event-driven approach are:
 
   - Only Kalaha board knows about pits location and its configuration (in term of who should observe and listen for a given event)
   - Pit in other hand, only knows what events it should emit and how to handle notifications, like move notification, capture seeds, etc.
-  - Since all actions result in events, we could re-create the whole game situation from the emitted events.
-  - This approach makes it easy to provide UI and UI components only need to register them self for the events and react on those notifications.
+  - Since all actions result in events, we could re-create/replay the whole game situation from the emitted events.
+  - This approach makes it easy to provide UI (web, desktop app, etc). The UI components only need to register them self for the events and react on those notifications.
   
-Here is a class structure diagram from version 1.3:
-![alt class diagram](Class-Structure-version-1.3.png)
+Here is a class structure diagram from version 1.4:
+![alt class diagram](Class-Structure-version-1.4.png)
 
 I tried my best to make sure that source code is well-documented and provide some Kalaha board sketches to make it easy to understand. Acceptance tests should cover the game rules and play scenarios.
 

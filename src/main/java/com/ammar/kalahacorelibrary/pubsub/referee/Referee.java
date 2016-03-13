@@ -4,10 +4,10 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import com.ammar.kalahacorelibrary.pubsub.Observable;
+import com.ammar.kalahacorelibrary.pubsub.ObservableBase;
 import com.ammar.kalahacorelibrary.pubsub.Observer;
 import com.ammar.kalahacorelibrary.pubsub.pit.Pit;
 import com.ammar.kalahacorelibrary.event.Event;
@@ -19,7 +19,7 @@ import com.ammar.kalahacorelibrary.player.PlayerType;
  * <p>
  * Created by amhamid on 7/23/15.
  */
-public class Referee implements Observable, Observer {
+public class Referee extends ObservableBase implements Observer {
 
     private final Map<String, Pit> pitsForPlayer1;
     private final Map<String, Pit> pitsForPlayer2;
@@ -27,7 +27,6 @@ public class Referee implements Observable, Observer {
     private final Map<PlayerType, Set<String>> notEmptyPits;
     private PlayerType currentPlayerTurn;
     private PlayerType winner;
-    private final Map<EventType, Set<Observer>> observerMap;
 
     public Referee(final Map<String, Pit> pitsForPlayer1, final Map<String, Pit> pitsForPlayer2) {
         this.pitsForPlayer1 = pitsForPlayer1;
@@ -125,32 +124,8 @@ public class Referee implements Observable, Observer {
     }
 
     @Override
-    public void addObserver(final EventType eventType, final Observer observer) {
-        final Set<Observer> observers = new LinkedHashSet<>();
-        final Set<Observer> currentObservers = this.observerMap.get(eventType);
-        if (Objects.nonNull(currentObservers)) {
-            observers.addAll(currentObservers);
-        }
-        observers.add(observer);
-
-        this.observerMap.put(eventType, observers);
-    }
-
-    @Override
     public void addObserver(final Set<EventType> eventTypes, final Observer observer) {
         eventTypes.stream().forEach(eventType -> addObserver(eventType, observer));
-    }
-
-    @Override
-    public void notifyObservers(final Event event) {
-        final EventType eventType = event.getEventType();
-        final Set<Observer> observers = new LinkedHashSet<>();
-        final Set<Observer> currentObservers = this.observerMap.get(eventType);
-        if (Objects.nonNull(currentObservers)) {
-            observers.addAll(currentObservers);
-        }
-
-        observers.stream().forEach(observer -> observer.update(this, event));
     }
 
     private void publishEvent(final PlayerType playerType, final EventType eventType, final int numberOfSeeds) {

@@ -1,21 +1,21 @@
 package com.ammar.kalahacorelibrary.board;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.junit.Assert.assertThat;
-
-import java.util.Map;
-import java.util.Set;
-
 import com.ammar.kalahacorelibrary.player.PlayerType;
 import com.ammar.kalahacorelibrary.pubsub.pit.impl.KalahaPit;
 import com.ammar.kalahacorelibrary.pubsub.pit.impl.NormalPit;
 import com.ammar.kalahacorelibrary.pubsub.referee.Referee;
 import org.junit.Test;
 
+import java.util.Map;
+import java.util.Set;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+
 /**
  * Kalaha Core Library Acceptance Tests
- * <p/>
+ * <p>
  * <pre>
  *
  * The board in this test looks like the following:
@@ -32,7 +32,7 @@ import org.junit.Test;
  *     Player 2 owns:  Pit 7 .. 12  +  KalahaPit2
  *
  * </pre>
- * <p/>
+ * <p>
  * Created by amhamid on 7/23/15.
  */
 public class KalahaCoreLibraryAcceptanceTest {
@@ -40,7 +40,7 @@ public class KalahaCoreLibraryAcceptanceTest {
     /**
      * Scenario 1:
      * Player 1: Moving 6 seeds from Pit 1
-     * <p/>
+     * <p>
      * Expectations:
      * - Pit 1 has 0 seeds after initial move
      * - Pit 2, 3, 4, 5, 6, should have 7 seeds
@@ -48,7 +48,7 @@ public class KalahaCoreLibraryAcceptanceTest {
      * - Referee should note that Pit 1 is empty
      * - Referee should note that the rest of the pits (2..12) excluding Kalaha pit, are not empty
      * - Player 1 should be playing again (because last seed ends in his Kalaha pit)
-     * <p/>
+     * <p>
      */
     @Test
     public void scenario1() {
@@ -56,17 +56,17 @@ public class KalahaCoreLibraryAcceptanceTest {
 
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
-        final NormalPit pit1 = kalahaBoard.getPit1();
+        final NormalPit pit1 = kalahaBoard.getPlayer1().getPit1();
         pit1.initialMove();
 
         // assert number of seeds
         assertThat("Pit 1 should have 0 seeds", pit1.getNumberOfSeeds(), is(0));
-        assertThat("Pit 2 should have 7 seeds", kalahaBoard.getPit2().getNumberOfSeeds(), is(7));
-        assertThat("Pit 3 should have 7 seeds", kalahaBoard.getPit3().getNumberOfSeeds(), is(7));
-        assertThat("Pit 4 should have 7 seeds", kalahaBoard.getPit4().getNumberOfSeeds(), is(7));
-        assertThat("Pit 5 should have 7 seeds", kalahaBoard.getPit5().getNumberOfSeeds(), is(7));
-        assertThat("Pit 6 should have 7 seeds", kalahaBoard.getPit6().getNumberOfSeeds(), is(7));
-        assertThat("Kalaha Pit Player 1 should have 1 seed", kalahaBoard.getKalahaPitPlayer1().getNumberOfSeeds(), is(1));
+        assertThat("Pit 2 should have 7 seeds", kalahaBoard.getPlayer1().getPit2().getNumberOfSeeds(), is(7));
+        assertThat("Pit 3 should have 7 seeds", kalahaBoard.getPlayer1().getPit3().getNumberOfSeeds(), is(7));
+        assertThat("Pit 4 should have 7 seeds", kalahaBoard.getPlayer1().getPit4().getNumberOfSeeds(), is(7));
+        assertThat("Pit 5 should have 7 seeds", kalahaBoard.getPlayer1().getPit5().getNumberOfSeeds(), is(7));
+        assertThat("Pit 6 should have 7 seeds", kalahaBoard.getPlayer1().getPit6().getNumberOfSeeds(), is(7));
+        assertThat("Kalaha Pit Player 1 should have 1 seed", kalahaBoard.getPlayer1().getKalahaPit().getNumberOfSeeds(), is(1));
 
         final Referee referee = kalahaBoard.getReferee();
         final Map<PlayerType, Set<String>> emptyPits = referee.getEmptyPits();
@@ -106,9 +106,9 @@ public class KalahaCoreLibraryAcceptanceTest {
     /**
      * Scenario 2:
      * Do scenario 1 from the perspective of player 2
-     * <p/>
-     * Player 2: Moving 6 seeds from Pit 7
-     * <p/>
+     * <p>
+     * Player 2: Moving 6 seeds from Pit 7 (player 2 pit 1)
+     * <p>
      * Expectations:
      * - Pit 7 has 0 seeds after initial move
      * - Pit 8, 9, 10, 11, 12, should have 7 seeds
@@ -116,7 +116,7 @@ public class KalahaCoreLibraryAcceptanceTest {
      * - Referee should note that Pit 7 is empty
      * - Referee should note that the rest of the pits (1..6 and 8..12) excluding Kalaha pit, are not empty
      * - Player 2 should be playing again (because last seed ends in his Kalaha pit)
-     * <p/>
+     * <p>
      */
     @Test
     public void scenario2() {
@@ -124,17 +124,17 @@ public class KalahaCoreLibraryAcceptanceTest {
 
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
-        final NormalPit pit7 = kalahaBoard.getPit7();
+        final NormalPit pit7 = kalahaBoard.getPlayer2().getPit1();
         pit7.initialMove();
 
         // assert number of seeds
         assertThat("Pit 7 should have 0 seeds", pit7.getNumberOfSeeds(), is(0));
-        assertThat("Pit 8 should have 7 seeds", kalahaBoard.getPit8().getNumberOfSeeds(), is(7));
-        assertThat("Pit 9 should have 7 seeds", kalahaBoard.getPit9().getNumberOfSeeds(), is(7));
-        assertThat("Pit 10 should have 7 seeds", kalahaBoard.getPit10().getNumberOfSeeds(), is(7));
-        assertThat("Pit 11 should have 7 seeds", kalahaBoard.getPit11().getNumberOfSeeds(), is(7));
-        assertThat("Pit 12 should have 7 seeds", kalahaBoard.getPit12().getNumberOfSeeds(), is(7));
-        assertThat("Kalaha Pit Player 2 should have 1 seed", kalahaBoard.getKalahaPitPlayer2().getNumberOfSeeds(), is(1));
+        assertThat("Pit 8 should have 7 seeds", kalahaBoard.getPlayer2().getPit2().getNumberOfSeeds(), is(7));
+        assertThat("Pit 9 should have 7 seeds", kalahaBoard.getPlayer2().getPit3().getNumberOfSeeds(), is(7));
+        assertThat("Pit 10 should have 7 seeds", kalahaBoard.getPlayer2().getPit4().getNumberOfSeeds(), is(7));
+        assertThat("Pit 11 should have 7 seeds", kalahaBoard.getPlayer2().getPit5().getNumberOfSeeds(), is(7));
+        assertThat("Pit 12 should have 7 seeds", kalahaBoard.getPlayer2().getPit6().getNumberOfSeeds(), is(7));
+        assertThat("Kalaha Pit Player 2 should have 1 seed", kalahaBoard.getPlayer2().getKalahaPit().getNumberOfSeeds(), is(1));
 
         final Referee referee = kalahaBoard.getReferee();
         final Map<PlayerType, Set<String>> emptyPits = referee.getEmptyPits();
@@ -174,7 +174,7 @@ public class KalahaCoreLibraryAcceptanceTest {
     /**
      * Scenario 3:
      * Player 1: Moving 14 seeds from pit 1.
-     * <p/>
+     * <p>
      * Expectations:
      * - Should add 1 to all of its neighbors and should stop at pit 2 (next round)
      * - Should skip the Kalaha opponent
@@ -186,26 +186,26 @@ public class KalahaCoreLibraryAcceptanceTest {
 
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
-        final NormalPit pit1 = kalahaBoard.getPit1();
+        final NormalPit pit1 = kalahaBoard.getPlayer1().getPit1();
         pit1.setNumberOfSeedsForTestPurposeOnly(14);
         pit1.initialMove();
 
         // assert number of seeds
         // initially pit 1 has 0 seed and pit 2 has 7 seeds, but will be updated in the second round (because we have 14 seeds as initial seeds for pit 1)
-        assertThat("Pit 3 should have 7 seeds", kalahaBoard.getPit3().getNumberOfSeeds(), is(7));
-        assertThat("Pit 4 should have 7 seeds", kalahaBoard.getPit4().getNumberOfSeeds(), is(7));
-        assertThat("Pit 5 should have 7 seeds", kalahaBoard.getPit5().getNumberOfSeeds(), is(7));
-        assertThat("Pit 6 should have 7 seeds", kalahaBoard.getPit6().getNumberOfSeeds(), is(7));
-        assertThat("Kalaha Pit Player 1 should have 1 seed", kalahaBoard.getKalahaPitPlayer1().getNumberOfSeeds(), is(1));
-        assertThat("Pit 7 should have 7 seeds", kalahaBoard.getPit7().getNumberOfSeeds(), is(7));
-        assertThat("Pit 8 should have 7 seeds", kalahaBoard.getPit8().getNumberOfSeeds(), is(7));
-        assertThat("Pit 9 should have 7 seeds", kalahaBoard.getPit9().getNumberOfSeeds(), is(7));
-        assertThat("Pit 10 should have 7 seeds", kalahaBoard.getPit10().getNumberOfSeeds(), is(7));
-        assertThat("Pit 11 should have 7 seeds", kalahaBoard.getPit11().getNumberOfSeeds(), is(7));
-        assertThat("Pit 12 should have 7 seeds", kalahaBoard.getPit12().getNumberOfSeeds(), is(7));
-        assertThat("Kalaha Pit Player 2 should have 0 seed", kalahaBoard.getKalahaPitPlayer2().getNumberOfSeeds(), is(0));
-        assertThat("Pit 1 should have 1 seeds", kalahaBoard.getPit1().getNumberOfSeeds(), is(1));
-        assertThat("Pit 2 should have 8 seeds", kalahaBoard.getPit2().getNumberOfSeeds(), is(8));
+        assertThat("Pit 3 should have 7 seeds", kalahaBoard.getPlayer1().getPit3().getNumberOfSeeds(), is(7));
+        assertThat("Pit 4 should have 7 seeds", kalahaBoard.getPlayer1().getPit4().getNumberOfSeeds(), is(7));
+        assertThat("Pit 5 should have 7 seeds", kalahaBoard.getPlayer1().getPit5().getNumberOfSeeds(), is(7));
+        assertThat("Pit 6 should have 7 seeds", kalahaBoard.getPlayer1().getPit6().getNumberOfSeeds(), is(7));
+        assertThat("Kalaha Pit Player 1 should have 1 seed", kalahaBoard.getPlayer1().getKalahaPit().getNumberOfSeeds(), is(1));
+        assertThat("Pit 7 should have 7 seeds", kalahaBoard.getPlayer2().getPit1().getNumberOfSeeds(), is(7));
+        assertThat("Pit 8 should have 7 seeds", kalahaBoard.getPlayer2().getPit2().getNumberOfSeeds(), is(7));
+        assertThat("Pit 9 should have 7 seeds", kalahaBoard.getPlayer2().getPit3().getNumberOfSeeds(), is(7));
+        assertThat("Pit 10 should have 7 seeds", kalahaBoard.getPlayer2().getPit4().getNumberOfSeeds(), is(7));
+        assertThat("Pit 11 should have 7 seeds", kalahaBoard.getPlayer2().getPit5().getNumberOfSeeds(), is(7));
+        assertThat("Pit 12 should have 7 seeds", kalahaBoard.getPlayer2().getPit6().getNumberOfSeeds(), is(7));
+        assertThat("Kalaha Pit Player 2 should have 0 seed", kalahaBoard.getPlayer2().getKalahaPit().getNumberOfSeeds(), is(0));
+        assertThat("Pit 1 should have 1 seeds", kalahaBoard.getPlayer1().getPit1().getNumberOfSeeds(), is(1));
+        assertThat("Pit 2 should have 8 seeds", kalahaBoard.getPlayer1().getPit2().getNumberOfSeeds(), is(8));
 
         final Referee referee = kalahaBoard.getReferee();
         final Map<PlayerType, Set<String>> emptyPits = referee.getEmptyPits();
@@ -245,9 +245,9 @@ public class KalahaCoreLibraryAcceptanceTest {
     /**
      * Scenario 4:
      * Do scenario 3 from the perspective of player 2
-     * <p/>
+     * <p>
      * Player 2: Moving 14 seeds from pit 7.
-     * <p/>
+     * <p>
      * Expectations:
      * - Should add 1 to all of its neighbors and should stop at pit 8 (next round)
      * - Should skip the Kalaha opponent
@@ -259,26 +259,26 @@ public class KalahaCoreLibraryAcceptanceTest {
 
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
-        final NormalPit pit7 = kalahaBoard.getPit7();
+        final NormalPit pit7 = kalahaBoard.getPlayer2().getPit1();
         pit7.setNumberOfSeedsForTestPurposeOnly(14);
         pit7.initialMove();
 
         // assert number of seeds
         // initially pit 7 has 0 seed and pit 8 has 7 seeds, but will be updated in the second round (because we have 14 seeds as initial seeds for pit 7)
-        assertThat("Pit 9 should have 7 seeds", kalahaBoard.getPit9().getNumberOfSeeds(), is(7));
-        assertThat("Pit 10 should have 7 seeds", kalahaBoard.getPit10().getNumberOfSeeds(), is(7));
-        assertThat("Pit 11 should have 7 seeds", kalahaBoard.getPit11().getNumberOfSeeds(), is(7));
-        assertThat("Pit 12 should have 7 seeds", kalahaBoard.getPit12().getNumberOfSeeds(), is(7));
-        assertThat("Kalaha Pit Player 2 should have 1 seed", kalahaBoard.getKalahaPitPlayer2().getNumberOfSeeds(), is(1));
-        assertThat("Pit 1 should have 7 seeds", kalahaBoard.getPit1().getNumberOfSeeds(), is(7));
-        assertThat("Pit 2 should have 7 seeds", kalahaBoard.getPit2().getNumberOfSeeds(), is(7));
-        assertThat("Pit 3 should have 7 seeds", kalahaBoard.getPit3().getNumberOfSeeds(), is(7));
-        assertThat("Pit 4 should have 7 seeds", kalahaBoard.getPit4().getNumberOfSeeds(), is(7));
-        assertThat("Pit 5 should have 7 seeds", kalahaBoard.getPit5().getNumberOfSeeds(), is(7));
-        assertThat("Pit 6 should have 7 seeds", kalahaBoard.getPit6().getNumberOfSeeds(), is(7));
-        assertThat("Kalaha Pit Player 1 should have 0 seed", kalahaBoard.getKalahaPitPlayer1().getNumberOfSeeds(), is(0));
-        assertThat("Pit 7 should have 1 seeds", kalahaBoard.getPit7().getNumberOfSeeds(), is(1));
-        assertThat("Pit 8 should have 8 seeds", kalahaBoard.getPit8().getNumberOfSeeds(), is(8));
+        assertThat("Pit 9 should have 7 seeds", kalahaBoard.getPlayer2().getPit3().getNumberOfSeeds(), is(7));
+        assertThat("Pit 10 should have 7 seeds", kalahaBoard.getPlayer2().getPit4().getNumberOfSeeds(), is(7));
+        assertThat("Pit 11 should have 7 seeds", kalahaBoard.getPlayer2().getPit5().getNumberOfSeeds(), is(7));
+        assertThat("Pit 12 should have 7 seeds", kalahaBoard.getPlayer2().getPit6().getNumberOfSeeds(), is(7));
+        assertThat("Kalaha Pit Player 2 should have 1 seed", kalahaBoard.getPlayer2().getKalahaPit().getNumberOfSeeds(), is(1));
+        assertThat("Pit 1 should have 7 seeds", kalahaBoard.getPlayer1().getPit1().getNumberOfSeeds(), is(7));
+        assertThat("Pit 2 should have 7 seeds", kalahaBoard.getPlayer1().getPit2().getNumberOfSeeds(), is(7));
+        assertThat("Pit 3 should have 7 seeds", kalahaBoard.getPlayer1().getPit3().getNumberOfSeeds(), is(7));
+        assertThat("Pit 4 should have 7 seeds", kalahaBoard.getPlayer1().getPit4().getNumberOfSeeds(), is(7));
+        assertThat("Pit 5 should have 7 seeds", kalahaBoard.getPlayer1().getPit5().getNumberOfSeeds(), is(7));
+        assertThat("Pit 6 should have 7 seeds", kalahaBoard.getPlayer1().getPit6().getNumberOfSeeds(), is(7));
+        assertThat("Kalaha Pit Player 1 should have 0 seed", kalahaBoard.getPlayer1().getKalahaPit().getNumberOfSeeds(), is(0));
+        assertThat("Pit 7 should have 1 seeds", kalahaBoard.getPlayer2().getPit1().getNumberOfSeeds(), is(1));
+        assertThat("Pit 8 should have 8 seeds", kalahaBoard.getPlayer2().getPit2().getNumberOfSeeds(), is(8));
 
         final Referee referee = kalahaBoard.getReferee();
         final Map<PlayerType, Set<String>> emptyPits = referee.getEmptyPits();
@@ -318,7 +318,7 @@ public class KalahaCoreLibraryAcceptanceTest {
     /**
      * Scenario 5:
      * Player 1: Pit 3 has 1 seed, pit 4 is empty, player 1 moves his 1 seed from pit 3 to pit 4
-     * <p/>
+     * <p>
      * Expectations:
      * - Player 1 capture his 1 seed in pit 4 and its opponent pit (who happen to have 5 pits) in the opposite pit
      * - Store these seeds (total of 6 seeds in his kalaha pit), in this scenario, his kalaha pit has originally 10 pits, so total after this event, should be 16 pits.
@@ -331,26 +331,26 @@ public class KalahaCoreLibraryAcceptanceTest {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         // set pit 3 to have 1 seed
-        final NormalPit pit3 = kalahaBoard.getPit3();
+        final NormalPit pit3 = kalahaBoard.getPlayer1().getPit3();
         pit3.setNumberOfSeedsForTestPurposeOnly(1);
 
         // set pit 4 empty
-        final NormalPit pit4 = kalahaBoard.getPit4();
+        final NormalPit pit4 = kalahaBoard.getPlayer1().getPit4();
         pit4.setNumberOfSeedsForTestPurposeOnly(0);
 
         // set pit 9 (the opposite of pit 4) to have 5 seeds
-        final NormalPit pit9 = kalahaBoard.getPit9();
+        final NormalPit pit9 = kalahaBoard.getPlayer2().getPit3();
         pit9.setNumberOfSeedsForTestPurposeOnly(5);
 
-        final KalahaPit kalahaPit = kalahaBoard.getKalahaPitPlayer1();
+        final KalahaPit kalahaPit = kalahaBoard.getPlayer1().getKalahaPit();
         kalahaPit.setNumberOfSeedsForTestPurposeOnly(10);
 
         // move 1 seed from pit 3 to pit 4
         pit3.initialMove();
 
-        assertThat("Pit 3 should have 0 seeds", kalahaBoard.getPit3().getNumberOfSeeds(), is(0));
-        assertThat("Pit 4 should have 0 seeds", kalahaBoard.getPit4().getNumberOfSeeds(), is(0));
-        assertThat("Pit 9 (the opposite of pit 4) should have 0 seeds", kalahaBoard.getPit9().getNumberOfSeeds(), is(0));
+        assertThat("Pit 3 should have 0 seeds", kalahaBoard.getPlayer1().getPit3().getNumberOfSeeds(), is(0));
+        assertThat("Pit 4 should have 0 seeds", kalahaBoard.getPlayer1().getPit4().getNumberOfSeeds(), is(0));
+        assertThat("Pit 9 (the opposite of pit 4) should have 0 seeds", kalahaBoard.getPlayer2().getPit3().getNumberOfSeeds(), is(0));
         assertThat("Kalaha Pit for player 1 should have 16 seeds (10 seeds originally + 6 pits captured)", kalahaPit.getNumberOfSeeds(), is(16));
 
         final PlayerType currentPlayerTurn = kalahaBoard.getReferee().getCurrentPlayerTurn();
@@ -360,9 +360,9 @@ public class KalahaCoreLibraryAcceptanceTest {
     /**
      * Scenario 5:
      * Do scenario 4 from the perspective of player 2
-     * <p/>
+     * <p>
      * Player 2: Pit 11 has 1 seed, pit 12 is empty, player 2 moves his 1 seed from pit 11 to pit 12
-     * <p/>
+     * <p>
      * Expectations:
      * - Player 2 capture his 1 seed in pit 12 and its opponent pit (who happen to have 8 pits) in the opposite pit
      * - Store these seeds (total of 9 seeds in his kalaha pit), in this scenario, his kalaha pit has originally 10 pits, so total after this event, should be 19 pits.
@@ -375,26 +375,26 @@ public class KalahaCoreLibraryAcceptanceTest {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         // set pit 11 to have 1 seed
-        final NormalPit pit11 = kalahaBoard.getPit11();
+        final NormalPit pit11 = kalahaBoard.getPlayer2().getPit5();
         pit11.setNumberOfSeedsForTestPurposeOnly(1);
 
         // set pit 12 empty
-        final NormalPit pit12 = kalahaBoard.getPit12();
+        final NormalPit pit12 = kalahaBoard.getPlayer2().getPit6();
         pit12.setNumberOfSeedsForTestPurposeOnly(0);
 
         // set pit 1 (the opposite of pit 12) to have 8 seeds
-        final NormalPit pit1 = kalahaBoard.getPit1();
+        final NormalPit pit1 = kalahaBoard.getPlayer1().getPit1();
         pit1.setNumberOfSeedsForTestPurposeOnly(8);
 
-        final KalahaPit kalahaPit = kalahaBoard.getKalahaPitPlayer2();
+        final KalahaPit kalahaPit = kalahaBoard.getPlayer2().getKalahaPit();
         kalahaPit.setNumberOfSeedsForTestPurposeOnly(10);
 
         // move 1 seed from pit 11 to pit 12
         pit11.initialMove();
 
-        assertThat("Pit 11 should have 0 seeds", kalahaBoard.getPit11().getNumberOfSeeds(), is(0));
-        assertThat("Pit 12 should have 0 seeds", kalahaBoard.getPit12().getNumberOfSeeds(), is(0));
-        assertThat("Pit 1 (the opposite of pit 12) should have 0 seeds", kalahaBoard.getPit1().getNumberOfSeeds(), is(0));
+        assertThat("Pit 11 should have 0 seeds", kalahaBoard.getPlayer2().getPit5().getNumberOfSeeds(), is(0));
+        assertThat("Pit 12 should have 0 seeds", kalahaBoard.getPlayer2().getPit6().getNumberOfSeeds(), is(0));
+        assertThat("Pit 1 (the opposite of pit 12) should have 0 seeds", kalahaBoard.getPlayer1().getPit1().getNumberOfSeeds(), is(0));
         assertThat("Kalaha Pit for player 2 should have 19 seeds (10 seeds originally + 9 pits captured)", kalahaPit.getNumberOfSeeds(), is(19));
 
         final PlayerType currentPlayerTurn = kalahaBoard.getReferee().getCurrentPlayerTurn();
@@ -404,7 +404,7 @@ public class KalahaCoreLibraryAcceptanceTest {
     /**
      * Scenario 7:
      * Player 1: Pit 3 has 1 seed, pit 4 is empty, player 1 moves his 1 seed from pit 3 to pit 4
-     * <p/>
+     * <p>
      * Expectations:
      * - Player 1 capture his 1 seed in pit 4 and its opponent pit (who happen to have 0 pits) in the opposite pit
      * - Store these seeds (total of 1 seeds in his kalaha pit), in this scenario, his kalaha pit has originally 10 pits, so total after this event, should be 11 pits.
@@ -417,26 +417,26 @@ public class KalahaCoreLibraryAcceptanceTest {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         // set pit 3 to have 1 seed
-        final NormalPit pit3 = kalahaBoard.getPit3();
+        final NormalPit pit3 = kalahaBoard.getPlayer1().getPit3();
         pit3.setNumberOfSeedsForTestPurposeOnly(1);
 
         // set pit 4 empty
-        final NormalPit pit4 = kalahaBoard.getPit4();
+        final NormalPit pit4 = kalahaBoard.getPlayer1().getPit4();
         pit4.setNumberOfSeedsForTestPurposeOnly(0);
 
         // set pit 9 (the opposite of pit 4) to have 5 seeds
-        final NormalPit pit9 = kalahaBoard.getPit9();
+        final NormalPit pit9 = kalahaBoard.getPlayer2().getPit3();
         pit9.setNumberOfSeedsForTestPurposeOnly(0);
 
-        final KalahaPit kalahaPit = kalahaBoard.getKalahaPitPlayer1();
+        final KalahaPit kalahaPit = kalahaBoard.getPlayer1().getKalahaPit();
         kalahaPit.setNumberOfSeedsForTestPurposeOnly(10);
 
         // move 1 seed from pit 3 to pit 4
         pit3.initialMove();
 
-        assertThat("Pit 3 should have 0 seeds", kalahaBoard.getPit3().getNumberOfSeeds(), is(0));
-        assertThat("Pit 4 should have 0 seeds", kalahaBoard.getPit4().getNumberOfSeeds(), is(0));
-        assertThat("Pit 9 (the opposite of pit 4) should have 0 seeds", kalahaBoard.getPit9().getNumberOfSeeds(), is(0));
+        assertThat("Pit 3 should have 0 seeds", kalahaBoard.getPlayer1().getPit3().getNumberOfSeeds(), is(0));
+        assertThat("Pit 4 should have 0 seeds", kalahaBoard.getPlayer1().getPit4().getNumberOfSeeds(), is(0));
+        assertThat("Pit 9 (the opposite of pit 4) should have 0 seeds", kalahaBoard.getPlayer2().getPit3().getNumberOfSeeds(), is(0));
         assertThat("Kalaha Pit for player 1 should have 11 seeds (10 seeds originally + 1 pits captured)", kalahaPit.getNumberOfSeeds(), is(11));
 
         final PlayerType currentPlayerTurn = kalahaBoard.getReferee().getCurrentPlayerTurn();
@@ -446,9 +446,9 @@ public class KalahaCoreLibraryAcceptanceTest {
     /**
      * Scenario 8:
      * Do scenario 7 from the perspective of player 2
-     * <p/>
+     * <p>
      * Player 2: Pit 11 has 1 seed, pit 12 is empty, player 2 moves his 1 seed from pit 11 to pit 12
-     * <p/>
+     * <p>
      * Expectations:
      * - Player 2 capture his 1 seed in pit 12 and its opponent pit (who happen to have 0 pits) in the opposite pit
      * - Store these seeds (total of 1 seeds in his kalaha pit), in this scenario, his kalaha pit has originally 10 pits, so total after this event, should be 11 pits.
@@ -461,26 +461,26 @@ public class KalahaCoreLibraryAcceptanceTest {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         // set pit 11 to have 1 seed
-        final NormalPit pit11 = kalahaBoard.getPit11();
+        final NormalPit pit11 = kalahaBoard.getPlayer2().getPit5();
         pit11.setNumberOfSeedsForTestPurposeOnly(1);
 
         // set pit 12 empty
-        final NormalPit pit12 = kalahaBoard.getPit12();
+        final NormalPit pit12 = kalahaBoard.getPlayer2().getPit6();
         pit12.setNumberOfSeedsForTestPurposeOnly(0);
 
         // set pit 1 (the opposite of pit 12) to have 8 seeds
-        final NormalPit pit1 = kalahaBoard.getPit1();
+        final NormalPit pit1 = kalahaBoard.getPlayer1().getPit1();
         pit1.setNumberOfSeedsForTestPurposeOnly(0);
 
-        final KalahaPit kalahaPit = kalahaBoard.getKalahaPitPlayer2();
+        final KalahaPit kalahaPit = kalahaBoard.getPlayer2().getKalahaPit();
         kalahaPit.setNumberOfSeedsForTestPurposeOnly(10);
 
         // move 1 seed from pit 11 to pit 12
         pit11.initialMove();
 
-        assertThat("Pit 11 should have 0 seeds", kalahaBoard.getPit11().getNumberOfSeeds(), is(0));
-        assertThat("Pit 12 should have 0 seeds", kalahaBoard.getPit12().getNumberOfSeeds(), is(0));
-        assertThat("Pit 1 (the opposite of pit 12) should have 0 seeds", kalahaBoard.getPit1().getNumberOfSeeds(), is(0));
+        assertThat("Pit 11 should have 0 seeds", kalahaBoard.getPlayer2().getPit5().getNumberOfSeeds(), is(0));
+        assertThat("Pit 12 should have 0 seeds", kalahaBoard.getPlayer2().getPit6().getNumberOfSeeds(), is(0));
+        assertThat("Pit 1 (the opposite of pit 12) should have 0 seeds", kalahaBoard.getPlayer1().getPit1().getNumberOfSeeds(), is(0));
         assertThat("Kalaha Pit for player 2 should have 11 seeds (10 seeds originally + 1 pits captured)", kalahaPit.getNumberOfSeeds(), is(11));
 
         final PlayerType currentPlayerTurn = kalahaBoard.getReferee().getCurrentPlayerTurn();
@@ -491,7 +491,7 @@ public class KalahaCoreLibraryAcceptanceTest {
     /**
      * Scenario 9:
      * Player 1: all of his pits is empty, except pit 6 that has 1 seed, it is his turn then he move his last seed in pit 6 to his kalaha pit,
-     * <p/>
+     * <p>
      * Expectations:
      * - Since all pits is empty and Kalaha pit for player 1 has more than player 2 has (50 and 36 respectively), therefore player 1 wins.
      */
@@ -502,14 +502,14 @@ public class KalahaCoreLibraryAcceptanceTest {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         // make pit 1..5 empty
-        kalahaBoard.getPit1().removeAllSeedForTestPurposeOnly();
-        kalahaBoard.getPit2().removeAllSeedForTestPurposeOnly();
-        kalahaBoard.getPit3().removeAllSeedForTestPurposeOnly();
-        kalahaBoard.getPit4().removeAllSeedForTestPurposeOnly();
-        kalahaBoard.getPit5().removeAllSeedForTestPurposeOnly();
-        kalahaBoard.getKalahaPitPlayer1().setNumberOfSeedsForTestPurposeOnly(50);
+        kalahaBoard.getPlayer1().getPit1().removeAllSeedForTestPurposeOnly();
+        kalahaBoard.getPlayer1().getPit2().removeAllSeedForTestPurposeOnly();
+        kalahaBoard.getPlayer1().getPit3().removeAllSeedForTestPurposeOnly();
+        kalahaBoard.getPlayer1().getPit4().removeAllSeedForTestPurposeOnly();
+        kalahaBoard.getPlayer1().getPit5().removeAllSeedForTestPurposeOnly();
+        kalahaBoard.getPlayer1().getKalahaPit().setNumberOfSeedsForTestPurposeOnly(50);
 
-        final NormalPit pit6 = kalahaBoard.getPit6();
+        final NormalPit pit6 = kalahaBoard.getPlayer1().getPit6();
         pit6.setNumberOfSeedsForTestPurposeOnly(1);
 
         pit6.initialMove();
@@ -520,9 +520,9 @@ public class KalahaCoreLibraryAcceptanceTest {
     /**
      * Scenario 10:
      * Do scenario 9 from player 2 perspective
-     * <p/>
+     * <p>
      * Player 2: all of his pits is empty, except pit 12 that has 1 seed, it is his turn then he move his last seed in pit 12 to his kalaha pit,
-     * <p/>
+     * <p>
      * Expectations:
      * - Since all pits is empty and Kalaha pit for player 2 has more than player 1 has (50 and 36 respectively), therefore player 2 wins.
      */
@@ -533,14 +533,14 @@ public class KalahaCoreLibraryAcceptanceTest {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         // make pit 7..12 empty
-        kalahaBoard.getPit7().removeAllSeedForTestPurposeOnly();
-        kalahaBoard.getPit8().removeAllSeedForTestPurposeOnly();
-        kalahaBoard.getPit9().removeAllSeedForTestPurposeOnly();
-        kalahaBoard.getPit10().removeAllSeedForTestPurposeOnly();
-        kalahaBoard.getPit11().removeAllSeedForTestPurposeOnly();
-        kalahaBoard.getKalahaPitPlayer2().setNumberOfSeedsForTestPurposeOnly(50);
+        kalahaBoard.getPlayer2().getPit1().removeAllSeedForTestPurposeOnly();
+        kalahaBoard.getPlayer2().getPit2().removeAllSeedForTestPurposeOnly();
+        kalahaBoard.getPlayer2().getPit3().removeAllSeedForTestPurposeOnly();
+        kalahaBoard.getPlayer2().getPit4().removeAllSeedForTestPurposeOnly();
+        kalahaBoard.getPlayer2().getPit5().removeAllSeedForTestPurposeOnly();
+        kalahaBoard.getPlayer2().getKalahaPit().setNumberOfSeedsForTestPurposeOnly(50);
 
-        final NormalPit pit12 = kalahaBoard.getPit12();
+        final NormalPit pit12 = kalahaBoard.getPlayer2().getPit6();
         pit12.setNumberOfSeedsForTestPurposeOnly(1);
 
         pit12.initialMove();
@@ -550,7 +550,7 @@ public class KalahaCoreLibraryAcceptanceTest {
 
     /**
      * Scenario 11:
-     * <p/>
+     * <p>
      * Simulate TIE game from player 1 perspective
      */
     @Test
@@ -559,9 +559,9 @@ public class KalahaCoreLibraryAcceptanceTest {
 
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
-        kalahaBoard.getKalahaPitPlayer1().setNumberOfSeedsForTestPurposeOnly(35);
+        kalahaBoard.getPlayer1().getKalahaPit().setNumberOfSeedsForTestPurposeOnly(35);
 
-        final NormalPit pit6 = kalahaBoard.getPit6();
+        final NormalPit pit6 = kalahaBoard.getPlayer1().getPit6();
         pit6.setNumberOfSeedsForTestPurposeOnly(1);
 
         pit6.initialMove();
@@ -571,7 +571,7 @@ public class KalahaCoreLibraryAcceptanceTest {
 
     /**
      * Scenario 12:
-     * <p/>
+     * <p>
      * Simulate TIE game from player 2 perspective
      */
     @Test
@@ -580,9 +580,9 @@ public class KalahaCoreLibraryAcceptanceTest {
 
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
-        kalahaBoard.getKalahaPitPlayer2().setNumberOfSeedsForTestPurposeOnly(35);
+        kalahaBoard.getPlayer2().getKalahaPit().setNumberOfSeedsForTestPurposeOnly(35);
 
-        final NormalPit pit12 = kalahaBoard.getPit12();
+        final NormalPit pit12 = kalahaBoard.getPlayer2().getPit6();
         pit12.setNumberOfSeedsForTestPurposeOnly(1);
 
         pit12.initialMove();
@@ -593,7 +593,7 @@ public class KalahaCoreLibraryAcceptanceTest {
     /**
      * Scenario 13:
      * Player 1: Pit 6 has 2 seeds, pit 7 is empty, player 1 moves his 2 seeds from pit 6 to pit 7
-     * <p/>
+     * <p>
      * Expectations:
      * - Player 1 doesn't capture anything
      * - Switch to player 2
@@ -605,19 +605,19 @@ public class KalahaCoreLibraryAcceptanceTest {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         // set pit 6 to have 2 seed
-        final NormalPit pit6 = kalahaBoard.getPit6();
+        final NormalPit pit6 = kalahaBoard.getPlayer1().getPit6();
         pit6.setNumberOfSeedsForTestPurposeOnly(2);
 
         // set pit 7 empty
-        final NormalPit pit7 = kalahaBoard.getPit7();
+        final NormalPit pit7 = kalahaBoard.getPlayer2().getPit1();
         pit7.setNumberOfSeedsForTestPurposeOnly(0);
 
         // move 2 seed from pit 6 to pit 7
         pit6.initialMove();
 
-        assertThat("Pit 6 should have 0 seeds", kalahaBoard.getPit6().getNumberOfSeeds(), is(0));
-        assertThat("Pit 7 should have 1 seeds", kalahaBoard.getPit7().getNumberOfSeeds(), is(1));
-        assertThat("Kalaha Pit for player 1 should have 1 seeds (0 seeds originally + 1 pits from pit 6) --> no capture happens", kalahaBoard.getKalahaPitPlayer1().getNumberOfSeeds(), is(1));
+        assertThat("Pit 6 should have 0 seeds", kalahaBoard.getPlayer1().getPit6().getNumberOfSeeds(), is(0));
+        assertThat("Pit 7 should have 1 seeds", kalahaBoard.getPlayer2().getPit1().getNumberOfSeeds(), is(1));
+        assertThat("Kalaha Pit for player 1 should have 1 seeds (0 seeds originally + 1 pits from pit 6) --> no capture happens", kalahaBoard.getPlayer1().getKalahaPit().getNumberOfSeeds(), is(1));
 
         final PlayerType currentPlayerTurn = kalahaBoard.getReferee().getCurrentPlayerTurn();
         assertThat("Current player should switch to player 2", currentPlayerTurn, is(PlayerType.PLAYER_2));
@@ -626,7 +626,7 @@ public class KalahaCoreLibraryAcceptanceTest {
     /**
      * Scenario 14:
      * Player 2: Pit 12 has 2 seeds, pit 1 is empty, player 2 moves his 2 seeds from pit 12 to pit 1
-     * <p/>
+     * <p>
      * Expectations:
      * - Player 2 doesn't capture anything
      * - Switch to player 1
@@ -638,19 +638,19 @@ public class KalahaCoreLibraryAcceptanceTest {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         // set pit 12 to have 2 seed
-        final NormalPit pit12 = kalahaBoard.getPit12();
+        final NormalPit pit12 = kalahaBoard.getPlayer2().getPit6();
         pit12.setNumberOfSeedsForTestPurposeOnly(2);
 
         // set pit 1 empty
-        final NormalPit pit1 = kalahaBoard.getPit1();
+        final NormalPit pit1 = kalahaBoard.getPlayer1().getPit1();
         pit1.setNumberOfSeedsForTestPurposeOnly(0);
 
         // move 2 seed from pit 12 to pit 1
         pit12.initialMove();
 
-        assertThat("Pit 12 should have 0 seeds", kalahaBoard.getPit12().getNumberOfSeeds(), is(0));
-        assertThat("Pit 1 should have 1 seeds", kalahaBoard.getPit1().getNumberOfSeeds(), is(1));
-        assertThat("Kalaha Pit for player 2 should have 1 seeds (0 seeds originally + 1 pits from pit 12) --> no capture happens", kalahaBoard.getKalahaPitPlayer2().getNumberOfSeeds(), is(1));
+        assertThat("Pit 12 should have 0 seeds", kalahaBoard.getPlayer2().getPit6().getNumberOfSeeds(), is(0));
+        assertThat("Pit 1 should have 1 seeds", kalahaBoard.getPlayer1().getPit1().getNumberOfSeeds(), is(1));
+        assertThat("Kalaha Pit for player 2 should have 1 seeds (0 seeds originally + 1 pits from pit 12) --> no capture happens", kalahaBoard.getPlayer2().getKalahaPit().getNumberOfSeeds(), is(1));
 
         final PlayerType currentPlayerTurn = kalahaBoard.getReferee().getCurrentPlayerTurn();
         assertThat("Current player should switch to player 1", currentPlayerTurn, is(PlayerType.PLAYER_1));
@@ -666,13 +666,13 @@ public class KalahaCoreLibraryAcceptanceTest {
         final KalahaBoard kalahaBoard = new KalahaBoard(6);
 
         // set pit 1 to have 1 seed
-        final NormalPit pit1 = kalahaBoard.getPit1();
+        final NormalPit pit1 = kalahaBoard.getPlayer1().getPit1();
         pit1.setNumberOfSeedsForTestPurposeOnly(1);
 
         // move 1 seed from pit 1 to pit 2
         pit1.initialMove();
 
-        assertThat("Pit 1 should have 0 seeds", kalahaBoard.getPit1().getNumberOfSeeds(), is(0));
+        assertThat("Pit 1 should have 0 seeds", kalahaBoard.getPlayer1().getPit1().getNumberOfSeeds(), is(0));
 
         final PlayerType currentPlayerTurn = kalahaBoard.getReferee().getCurrentPlayerTurn();
         assertThat("Current player should switch to player 2", currentPlayerTurn, is(PlayerType.PLAYER_2));

@@ -1,19 +1,12 @@
 package com.ammar.kalahacorelibrary.board;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-
 import com.ammar.kalahacorelibrary.event.EventType;
 import com.ammar.kalahacorelibrary.player.PlayerType;
 import com.ammar.kalahacorelibrary.pubsub.audit.ReplayableEventPublisher;
 import com.ammar.kalahacorelibrary.pubsub.pit.Pit;
-import com.ammar.kalahacorelibrary.pubsub.pit.impl.KalahaPit;
-import com.ammar.kalahacorelibrary.pubsub.pit.impl.NormalPit;
 import com.ammar.kalahacorelibrary.pubsub.referee.Referee;
+
+import java.util.*;
 
 /**
  * Kalaha Board.
@@ -39,53 +32,24 @@ import com.ammar.kalahacorelibrary.pubsub.referee.Referee;
  * Created by amhamid on 7/23/15.
  */
 public class KalahaBoard {
-
-    private final NormalPit pit1;
-    private final NormalPit pit2;
-    private final NormalPit pit3;
-    private final NormalPit pit4;
-    private final NormalPit pit5;
-    private final NormalPit pit6;
-    private final NormalPit pit7;
-    private final NormalPit pit8;
-    private final NormalPit pit9;
-    private final NormalPit pit10;
-    private final NormalPit pit11;
-    private final NormalPit pit12;
-    private final KalahaPit kalahaPitPlayer1;
-    private final KalahaPit kalahaPitPlayer2;
-
+    private final PlayerPits player1;
+    private final PlayerPits player2;
     private final Referee referee;
     private final ReplayableEventPublisher replayableEventPublisher;
     private final Map<String, Pit> allPits;
-
 
     public KalahaBoard(final int initialNumberOfSeeds) {
         if (initialNumberOfSeeds <= 0) {
             throw new IllegalArgumentException("initial number of seeds should be bigger than 0");
         }
 
-        // set up pits for Player 1
-        pit1 = new NormalPit(PlayerType.PLAYER_1, "Pit 1", initialNumberOfSeeds);
-        pit2 = new NormalPit(PlayerType.PLAYER_1, "Pit 2", initialNumberOfSeeds);
-        pit3 = new NormalPit(PlayerType.PLAYER_1, "Pit 3", initialNumberOfSeeds);
-        pit4 = new NormalPit(PlayerType.PLAYER_1, "Pit 4", initialNumberOfSeeds);
-        pit5 = new NormalPit(PlayerType.PLAYER_1, "Pit 5", initialNumberOfSeeds);
-        pit6 = new NormalPit(PlayerType.PLAYER_1, "Pit 6", initialNumberOfSeeds);
-        kalahaPitPlayer1 = new KalahaPit(PlayerType.PLAYER_1, "KalahaPit 1", 0);
-
-        // set up pits for Player 2
-        pit7 = new NormalPit(PlayerType.PLAYER_2, "Pit 7", initialNumberOfSeeds);
-        pit8 = new NormalPit(PlayerType.PLAYER_2, "Pit 8", initialNumberOfSeeds);
-        pit9 = new NormalPit(PlayerType.PLAYER_2, "Pit 9", initialNumberOfSeeds);
-        pit10 = new NormalPit(PlayerType.PLAYER_2, "Pit 10", initialNumberOfSeeds);
-        pit11 = new NormalPit(PlayerType.PLAYER_2, "Pit 11", initialNumberOfSeeds);
-        pit12 = new NormalPit(PlayerType.PLAYER_2, "Pit 12", initialNumberOfSeeds);
-        kalahaPitPlayer2 = new KalahaPit(PlayerType.PLAYER_2, "KalahaPit 2", 0);
+        // setup pits for Players
+        player1 = new PlayerPits(PlayerType.PLAYER_1, initialNumberOfSeeds);
+        player2 = new PlayerPits(PlayerType.PLAYER_2, initialNumberOfSeeds);
 
         // assign pits for players
-        final Map<String, Pit> pitsForPlayer1 = getPitsForPlayer1();
-        final Map<String, Pit> pitsForPlayer2 = getPitsForPlayer2();
+        final Map<String, Pit> pitsForPlayer1 = player1.getAllPits();
+        final Map<String, Pit> pitsForPlayer2 = player2.getAllPits();
         allPits = new LinkedHashMap<>();
         allPits.putAll(pitsForPlayer1);
         allPits.putAll(pitsForPlayer2);
@@ -98,6 +62,14 @@ public class KalahaBoard {
         this.configureBoard();
     }
 
+    /**
+     * Configure board:
+     * - register 'replayable event publisher'
+     * - register pit neighbors
+     * - register pit opposites
+     * - register referee
+     * - register publisher for not empty pit
+     */
     private void configureBoard() {
         // this is registered first to make sure that we can track events as they inserted.
         registerReplayableEventPublisher();
@@ -138,20 +110,23 @@ public class KalahaBoard {
         eventTypes.add(EventType.MOVE);
         eventTypes.add(EventType.LAST_MOVE);
 
-        pit1.addObserver(eventTypes, pit2);
-        pit2.addObserver(eventTypes, pit3);
-        pit3.addObserver(eventTypes, pit4);
-        pit4.addObserver(eventTypes, pit5);
-        pit5.addObserver(eventTypes, pit6);
-        pit6.addObserver(eventTypes, kalahaPitPlayer1);
-        kalahaPitPlayer1.addObserver(eventTypes, pit7);
-        pit7.addObserver(eventTypes, pit8);
-        pit8.addObserver(eventTypes, pit9);
-        pit9.addObserver(eventTypes, pit10);
-        pit10.addObserver(eventTypes, pit11);
-        pit11.addObserver(eventTypes, pit12);
-        pit12.addObserver(eventTypes, kalahaPitPlayer2);
-        kalahaPitPlayer2.addObserver(eventTypes, pit1);
+        // player 1's pits
+        player1.getPit1().addObserver(eventTypes, player1.getPit2());
+        player1.getPit2().addObserver(eventTypes, player1.getPit3());
+        player1.getPit3().addObserver(eventTypes, player1.getPit4());
+        player1.getPit4().addObserver(eventTypes, player1.getPit5());
+        player1.getPit5().addObserver(eventTypes, player1.getPit6());
+        player1.getPit6().addObserver(eventTypes, player1.getKalahaPit());
+        player1.getKalahaPit().addObserver(eventTypes, player2.getPit1());
+
+        // player 2's pits
+        player2.getPit1().addObserver(eventTypes, player2.getPit2());
+        player2.getPit2().addObserver(eventTypes, player2.getPit3());
+        player2.getPit3().addObserver(eventTypes, player2.getPit4());
+        player2.getPit4().addObserver(eventTypes, player2.getPit5());
+        player2.getPit5().addObserver(eventTypes, player2.getPit6());
+        player2.getPit6().addObserver(eventTypes, player2.getKalahaPit());
+        player2.getKalahaPit().addObserver(eventTypes, player1.getPit1());
     }
 
     /**
@@ -177,35 +152,35 @@ public class KalahaBoard {
      * </pre>
      */
     private void registerOpposites() {
-        pit1.addObserver(EventType.CAPTURE_SEEDS, pit12);
-        pit12.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer1);
-        pit12.addObserver(EventType.CAPTURE_SEEDS, pit1);
-        pit1.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+        player1.getPit1().addObserver(EventType.CAPTURE_SEEDS, player2.getPit6());
+        player2.getPit6().addObserver(EventType.STORE_SEEDS, player1.getKalahaPit());
+        player2.getPit6().addObserver(EventType.CAPTURE_SEEDS, player1.getPit1());
+        player1.getPit1().addObserver(EventType.STORE_SEEDS, player2.getKalahaPit());
 
-        pit2.addObserver(EventType.CAPTURE_SEEDS, pit11);
-        pit11.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer1);
-        pit11.addObserver(EventType.CAPTURE_SEEDS, pit2);
-        pit2.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+        player1.getPit2().addObserver(EventType.CAPTURE_SEEDS, player2.getPit5());
+        player2.getPit5().addObserver(EventType.STORE_SEEDS, player1.getKalahaPit());
+        player2.getPit5().addObserver(EventType.CAPTURE_SEEDS, player1.getPit2());
+        player1.getPit2().addObserver(EventType.STORE_SEEDS, player2.getKalahaPit());
 
-        pit3.addObserver(EventType.CAPTURE_SEEDS, pit10);
-        pit10.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer1);
-        pit10.addObserver(EventType.CAPTURE_SEEDS, pit3);
-        pit3.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+        player1.getPit3().addObserver(EventType.CAPTURE_SEEDS, player2.getPit4());
+        player2.getPit4().addObserver(EventType.STORE_SEEDS, player1.getKalahaPit());
+        player2.getPit4().addObserver(EventType.CAPTURE_SEEDS, player1.getPit3());
+        player1.getPit3().addObserver(EventType.STORE_SEEDS, player2.getKalahaPit());
 
-        pit4.addObserver(EventType.CAPTURE_SEEDS, pit9);
-        pit9.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer1);
-        pit9.addObserver(EventType.CAPTURE_SEEDS, pit4);
-        pit4.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+        player1.getPit4().addObserver(EventType.CAPTURE_SEEDS, player2.getPit3());
+        player2.getPit3().addObserver(EventType.STORE_SEEDS, player1.getKalahaPit());
+        player2.getPit3().addObserver(EventType.CAPTURE_SEEDS, player1.getPit4());
+        player1.getPit4().addObserver(EventType.STORE_SEEDS, player2.getKalahaPit());
 
-        pit5.addObserver(EventType.CAPTURE_SEEDS, pit8);
-        pit8.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer1);
-        pit8.addObserver(EventType.CAPTURE_SEEDS, pit5);
-        pit5.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+        player1.getPit5().addObserver(EventType.CAPTURE_SEEDS, player2.getPit2());
+        player2.getPit2().addObserver(EventType.STORE_SEEDS, player1.getKalahaPit());
+        player2.getPit2().addObserver(EventType.CAPTURE_SEEDS, player1.getPit5());
+        player1.getPit5().addObserver(EventType.STORE_SEEDS, player2.getKalahaPit());
 
-        pit6.addObserver(EventType.CAPTURE_SEEDS, pit7);
-        pit7.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer1);
-        pit7.addObserver(EventType.CAPTURE_SEEDS, pit6);
-        pit6.addObserver(EventType.STORE_SEEDS, kalahaPitPlayer2);
+        player1.getPit6().addObserver(EventType.CAPTURE_SEEDS, player2.getPit1());
+        player2.getPit1().addObserver(EventType.STORE_SEEDS, player1.getKalahaPit());
+        player2.getPit1().addObserver(EventType.CAPTURE_SEEDS, player1.getPit6());
+        player1.getPit6().addObserver(EventType.STORE_SEEDS, player2.getKalahaPit());
     }
 
     /**
@@ -241,99 +216,16 @@ public class KalahaBoard {
         allPits.values().forEach(Pit::publishNotEmptyEvent);
     }
 
-    // get all pits for player 1
-    private Map<String, Pit> getPitsForPlayer1() {
-        final Map<String, Pit> pits = new LinkedHashMap<>();
-        pits.put(pit1.getPitIdentifier(), pit1);
-        pits.put(pit2.getPitIdentifier(), pit2);
-        pits.put(pit3.getPitIdentifier(), pit3);
-        pits.put(pit4.getPitIdentifier(), pit4);
-        pits.put(pit5.getPitIdentifier(), pit5);
-        pits.put(pit6.getPitIdentifier(), pit6);
-        pits.put(kalahaPitPlayer1.getPitIdentifier(), kalahaPitPlayer1);
-
-        return pits;
+    public PlayerPits getPlayer1() {
+        return player1;
     }
 
-    // get all pits for player 2
-    private Map<String, Pit> getPitsForPlayer2() {
-        final Map<String, Pit> pits = new LinkedHashMap<>();
-        pits.put(pit7.getPitIdentifier(), pit7);
-        pits.put(pit8.getPitIdentifier(), pit8);
-        pits.put(pit9.getPitIdentifier(), pit9);
-        pits.put(pit10.getPitIdentifier(), pit10);
-        pits.put(pit11.getPitIdentifier(), pit11);
-        pits.put(pit12.getPitIdentifier(), pit12);
-        pits.put(kalahaPitPlayer2.getPitIdentifier(), kalahaPitPlayer2);
-
-        return pits;
-    }
-
-    public NormalPit getPit1() {
-        return pit1;
-    }
-
-    public NormalPit getPit2() {
-        return pit2;
-    }
-
-    public NormalPit getPit3() {
-        return pit3;
-    }
-
-    public NormalPit getPit4() {
-        return pit4;
-    }
-
-    public NormalPit getPit5() {
-        return pit5;
-    }
-
-    public NormalPit getPit6() {
-        return pit6;
-    }
-
-    public KalahaPit getKalahaPitPlayer1() {
-        return kalahaPitPlayer1;
-    }
-
-    public NormalPit getPit7() {
-        return pit7;
-    }
-
-    public NormalPit getPit8() {
-        return pit8;
-    }
-
-    public NormalPit getPit9() {
-        return pit9;
-    }
-
-    public NormalPit getPit10() {
-        return pit10;
-    }
-
-    public NormalPit getPit11() {
-        return pit11;
-    }
-
-    public NormalPit getPit12() {
-        return pit12;
-    }
-
-    public KalahaPit getKalahaPitPlayer2() {
-        return kalahaPitPlayer2;
+    public PlayerPits getPlayer2() {
+        return player2;
     }
 
     public Referee getReferee() {
         return referee;
     }
 
-    public Map<String, Pit> getAllPits() {
-        return Collections.unmodifiableMap(allPits);
-    }
-
-    public ReplayableEventPublisher getReplayableEventPublisher() {
-        return replayableEventPublisher;
-    }
 }
